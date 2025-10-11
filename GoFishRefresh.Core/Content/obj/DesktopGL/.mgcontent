@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/10C.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/10D.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/10H.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/10S.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/2C.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/2D.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/2H.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/2S.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/3C.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/3D.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/3H.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/3S.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/4C.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/4D.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/4H.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/4S.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/5C.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/5D.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/5H.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/5S.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/6C.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/6D.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/6H.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/6S.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/7C.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/7D.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/7H.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/7S.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/8C.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/8D.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/8H.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/8S.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/9C.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/9D.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/9H.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/9S.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/AC.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/AD.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/AH.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/AS.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/Fonts/Hud.spritefont</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/JC.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/JD.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/JH.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/JS.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/KC.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/KD.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/KH.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/KS.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QC.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QD.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QH.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QS.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>
