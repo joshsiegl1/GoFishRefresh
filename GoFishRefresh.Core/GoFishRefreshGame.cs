@@ -36,6 +36,7 @@ namespace GoFishRefresh.Core
         /// </summary>
         public GoFishRefreshGame()
         {
+            IsMouseVisible = true;
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             mainGame = new MainGame();
             mainUI = new MainUI();
@@ -44,6 +45,8 @@ namespace GoFishRefresh.Core
             Content.RootDirectory = "Content";
             // Configure screen orientations.
             graphicsDeviceManager.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
+
+
         }
         /// <summary>
         /// Initializes the game, including setting up localization and adding the 
@@ -63,6 +66,18 @@ namespace GoFishRefresh.Core
             // based on what the user or operating system selected.
             var selectedLanguage = LocalizationManager.DEFAULT_CULTURE_CODE;
             LocalizationManager.SetCulture(selectedLanguage);
+            // Set up full screen mode for desktop platforms.
+            if (IsDesktop)
+            {
+                int screenWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+                int screenHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+
+                graphicsDeviceManager.IsFullScreen = true;
+                graphicsDeviceManager.PreferredBackBufferWidth = screenWidth;
+                graphicsDeviceManager.PreferredBackBufferHeight = screenHeight;
+                Window.IsBorderless = true;
+                graphicsDeviceManager.ApplyChanges();
+            }
         }
         /// <summary>
         /// Loads game content, such as textures and particle systems.
