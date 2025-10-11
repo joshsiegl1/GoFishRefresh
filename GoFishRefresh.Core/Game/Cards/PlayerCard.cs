@@ -53,7 +53,7 @@ public class PlayerCard : ISelectable
             _ => throw new ArgumentOutOfRangeException()
         };
         string textureName = $"{rankString}{suitString}";
-        texture = Content.Load<Texture2D>($"Cards/{textureName}");
+        texture = Content.Load<Texture2D>($"{textureName}");
     }
     public void DrawCard(SpriteBatch spriteBatch)
     {

@@ -24,10 +24,10 @@ public class MainGame
         for (int i = 0; i < HandSize; i++)
         {
             Card playerCard = deck.DrawCard();
-            PlayerCard pCard = new PlayerCard(playerCard, new Vector2(50 + i * 30, 400));
+            PlayerCard pCard = new PlayerCard(playerCard, new Vector2(50 + i * 240, 400));
             playerHand.Add(pCard);
             Card aiCard = deck.DrawCard();
-            AiCard aCard = new AiCard(aiCard, new Vector2(50 + i * 30, 50));
+            AiCard aCard = new AiCard(aiCard, new Vector2(50 + i * 240, 50));
             aiHand.Add(aCard);
         }
     }
@@ -37,6 +37,17 @@ public class MainGame
         {
             pCard.LoadContent(Content);
         }
-        AiCard.Texture = Content.Load<Texture2D>("back");
+        AiCard.Texture = Content.Load<Texture2D>("cardback");
+    }
+    public void Draw(SpriteBatch spriteBatch)
+    {
+        foreach (var pCard in playerHand)
+        {
+            pCard.DrawCard(spriteBatch);
+        }
+        foreach (var aCard in aiHand)
+        {
+            aCard.DrawCard(spriteBatch);
+        }
     }
 }

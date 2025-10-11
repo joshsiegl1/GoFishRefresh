@@ -20,3 +20,4 @@ C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.Core\obj\Debug\net
 C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.Core\obj\Debug\net8.0\refint\GoFishRefresh.Core.dll
 C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.Core\obj\Debug\net8.0\GoFishRefresh.Core.pdb
 C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.Core\obj\Debug\net8.0\ref\GoFishRefresh.Core.dll
+C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.Core\obj\Debug\net8.0\GoFishRefresh.Core.sourcelink.json

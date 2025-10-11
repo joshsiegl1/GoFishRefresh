@@ -15,8 +15,9 @@ namespace GoFishRefresh.Core
     /// </summary>
     public class GoFishRefreshGame : Game
     {
-        SpriteBatch _spriteBatch; 
+        SpriteBatch _spriteBatch;
         // Resources for drawing.
+        MainGame mainGame; 
         private GraphicsDeviceManager graphicsDeviceManager;
         /// <summary>
         /// Indicates if the game is running on a mobile platform.
@@ -34,6 +35,7 @@ namespace GoFishRefresh.Core
         public GoFishRefreshGame()
         {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
+            mainGame = new MainGame();
             // Share GraphicsDeviceManager as a service.
             Services.AddService(typeof(GraphicsDeviceManager), graphicsDeviceManager);
             Content.RootDirectory = "Content";
@@ -65,6 +67,7 @@ namespace GoFishRefresh.Core
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            mainGame.LoadContent(Content); 
             base.LoadContent();
         }
         /// <summary>
@@ -92,6 +95,7 @@ namespace GoFishRefresh.Core
             // Clears the screen with the MonoGame orange color before drawing.
             GraphicsDevice.Clear(new Color(53, 101, 77));
             _spriteBatch.Begin(SpriteSortMode.FrontToBack, transformMatrix: Global.createTransformMatrix(graphicsDeviceManager));
+            mainGame.Draw(_spriteBatch);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
