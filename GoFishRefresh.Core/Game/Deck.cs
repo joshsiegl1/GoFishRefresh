@@ -4,6 +4,7 @@ using System.Collections.Generic;
 #endregion 
 public class Deck
 {
+    public const int LIMIT = 52; 
     private List<Card> cards;
     public List<Card> Cards { get { return cards; } }
     private Random random;

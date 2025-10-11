@@ -10,22 +10,32 @@ namespace GoFishRefresh.Core.UI
     {
         Button btnShowHands;
         bool showHands = false;
+        CardSelector cardSelector; 
         public MainUI()
         {
             btnShowHands = new Button(Vector2.Zero);
             btnShowHands.onClick += onShowHandsClick;
+            cardSelector = new CardSelector();
         }
         private void onShowHandsClick(object sender, EventArgs e)
         {
             showHands = !showHands;
         }
+
+        public void Update(GameTime gameTime)
+        {
+            //btnShowHands.Update(gameTime);
+            cardSelector.Update(gameTime);
+        }
         public void LoadContent(ContentManager Content)
         {
-            btnShowHands.Texture = Content.Load<Texture2D>("showHandsButton");
+            //btnShowHands.Texture = Content.Load<Texture2D>("showHandsButton");
+            cardSelector.LoadContent(Content);
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            btnShowHands.Draw(spriteBatch);
+            //btnShowHands.Draw(spriteBatch);
+            cardSelector.Draw(spriteBatch);
         }
     }    
 }

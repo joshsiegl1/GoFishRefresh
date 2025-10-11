@@ -7,9 +7,10 @@ using Microsoft.Xna.Framework.Input;
 #endregion
 public class CardSelector : ISelectable
 {
+    MouseState MS, previousMS;
+    private int drawIndex = 0; 
     private List<SelectableCard> selectableCards;
     private Vector2 position;
-
     public bool IsSelected { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
     public bool IsHighlighted { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
@@ -27,6 +28,30 @@ public class CardSelector : ISelectable
             }
         }
     }
+
+    public void Update(GameTime gameTime)
+    {
+        MS = Mouse.GetState();
+
+        int scrollDelta = MS.ScrollWheelValue - previousMS.ScrollWheelValue;
+        if (scrollDelta < 0)
+        {
+            if (drawIndex <= 0)
+            {
+                drawIndex = Deck.LIMIT - 1;
+            }
+            else drawIndex--;
+        }
+        if (scrollDelta > 0)
+        {
+            if (drawIndex >= Deck.LIMIT - 1)
+            {
+                drawIndex = 0;
+            }
+            else drawIndex++;
+        }
+        previousMS = MS;
+    }
     public void LoadContent(ContentManager Content)
     {
         foreach (var card in selectableCards)
@@ -36,10 +61,7 @@ public class CardSelector : ISelectable
     }
     public void Draw(SpriteBatch spriteBatch)
     {
-        foreach (var card in selectableCards)
-        {
-            card.Draw(spriteBatch);
-        }
+        selectableCards[drawIndex].Draw(spriteBatch);
     }
 
     public void Select()

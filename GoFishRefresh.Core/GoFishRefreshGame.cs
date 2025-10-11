@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using static System.Net.Mime.MediaTypeNames;
 using System.Threading.Tasks.Dataflow;
+using GoFishRefresh.Core.UI;
 namespace GoFishRefresh.Core
 {
     /// <summary>
@@ -18,6 +19,7 @@ namespace GoFishRefresh.Core
         SpriteBatch _spriteBatch;
         // Resources for drawing.
         MainGame mainGame; 
+        MainUI mainUI;
         private GraphicsDeviceManager graphicsDeviceManager;
         /// <summary>
         /// Indicates if the game is running on a mobile platform.
@@ -36,6 +38,7 @@ namespace GoFishRefresh.Core
         {
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             mainGame = new MainGame();
+            mainUI = new MainUI();
             // Share GraphicsDeviceManager as a service.
             Services.AddService(typeof(GraphicsDeviceManager), graphicsDeviceManager);
             Content.RootDirectory = "Content";
@@ -68,6 +71,7 @@ namespace GoFishRefresh.Core
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             mainGame.LoadContent(Content); 
+            mainUI.LoadContent(Content);    
             base.LoadContent();
         }
         /// <summary>
@@ -82,6 +86,7 @@ namespace GoFishRefresh.Core
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
                 || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            mainUI.Update(gameTime);
             base.Update(gameTime);
         }
         /// <summary>
@@ -96,6 +101,7 @@ namespace GoFishRefresh.Core
             GraphicsDevice.Clear(new Color(53, 101, 77));
             _spriteBatch.Begin(SpriteSortMode.FrontToBack, transformMatrix: Global.createTransformMatrix(graphicsDeviceManager));
             mainGame.Draw(_spriteBatch);
+            mainUI.Draw(_spriteBatch);
             _spriteBatch.End();
             base.Draw(gameTime);
         }
