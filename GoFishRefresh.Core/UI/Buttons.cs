@@ -29,8 +29,27 @@ public class Button : ISelectable
     {
         IsSelected = false;
     }
+    private MouseState previousMS; 
     public void UpdateSelection(MouseState MS)
     {
+        MS = Mouse.GetState();
         Bounds = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+        if (Bounds.Contains(MS.Position))
+        {
+            Mouse.SetCursor(MouseCursor.Hand);
+            IsHighlighted = true;
+            if (MS.LeftButton == ButtonState.Pressed 
+                && previousMS.LeftButton == ButtonState.Released)
+            {
+                onClick?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        else
+        {
+            if (IsHighlighted)
+                Mouse.SetCursor(MouseCursor.Arrow);
+            IsHighlighted = false;
+        }
+        previousMS = MS;
     }
 }

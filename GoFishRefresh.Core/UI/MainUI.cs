@@ -3,11 +3,13 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
 #endregion
 namespace GoFishRefresh.Core.UI
 {
     public class MainUI
     {
+        MouseState MS; 
         Button btnShowHands;
         bool showHands = false;
         CardSelector cardSelector; 
@@ -26,7 +28,7 @@ namespace GoFishRefresh.Core.UI
 
         public void Update(GameTime gameTime)
         {
-            //btnShowHands.Update(gameTime);
+            btnShowHands.UpdateSelection(MS);
             cardSelector.Update(gameTime);
         }
         public void LoadContent(ContentManager Content)
@@ -38,6 +40,10 @@ namespace GoFishRefresh.Core.UI
         {
             btnShowHands.Draw(spriteBatch);
             cardSelector.Draw(spriteBatch);
+            if (showHands)
+            {
+                hands.Draw(spriteBatch);
+            }
         }
     }    
 }
