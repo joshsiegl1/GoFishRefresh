@@ -58,4 +58,41 @@ public class Hands
         RoyalFlush.Add(new Card(Card.Suits.Diamonds, Card.Ranks.King));
         RoyalFlush.Add(new Card(Card.Suits.Diamonds, Card.Ranks.Ace));
     }
+
+    private void DrawHand(SpriteBatch spriteBatch, string title, List<Card> hand, Vector2 position)
+    {
+        // Draw the title of the hand
+        //spriteBatch.DrawString(GameAssets.Font, title, position, Color.White);
+        position.Y += 30; // Move down for the cards
+
+        // Draw each card in the hand
+        foreach (var card in hand)
+        {
+            Texture2D cardTexture = Textures.GetCardTexture(card);
+            spriteBatch.Draw(cardTexture, position, null, Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0f);
+            position.X += cardTexture.Width + 10; // Move right for the next card
+        }
+    }
+
+    public void Draw(SpriteBatch spriteBatch)
+    {
+        Vector2 position = new Vector2(50, 50);
+        Vector2 offset = new Vector2(70, 0);
+
+        DrawHand(spriteBatch, "Two of a Kind", TwoOfAKind, position);
+        position.Y += 100;
+        DrawHand(spriteBatch, "Three of a Kind", ThreeOfAKind, position);
+        position.Y += 100;
+        DrawHand(spriteBatch, "Four of a Kind", FourOfAKind, position);
+        position.Y += 100;
+        DrawHand(spriteBatch, "Full House", FullHouse, position);
+        position.Y += 100;
+        DrawHand(spriteBatch, "Straight", Straight, position);
+        position.Y += 100;
+        DrawHand(spriteBatch, "Flush", Flush, position);
+        position.Y += 100;
+        DrawHand(spriteBatch, "Straight Flush", StraightFlush, position);
+        position.Y += 100;
+        DrawHand(spriteBatch, "Royal Flush", RoyalFlush, position);
+    }
 }

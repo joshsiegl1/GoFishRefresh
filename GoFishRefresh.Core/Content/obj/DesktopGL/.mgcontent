@@ -58,8 +58,10 @@
     <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QD.png</File>
     <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QH.png</File>
     <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QS.png</File>
+    <File>c:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/ShowHandsButton.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

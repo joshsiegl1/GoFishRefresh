@@ -10,7 +10,7 @@ public class Button : ISelectable
     public Texture2D Texture { get { return texture; } set { texture = value; } }
     public bool IsSelected { get; set; } = false;
     public bool IsHighlighted { get; set; } = false;
-    public Rectangle Bounds => throw new NotImplementedException();
+    public Rectangle Bounds { get; private set; }
     private Vector2 position;
     public event EventHandler onClick; 
     public Button(Vector2 position)
@@ -31,6 +31,6 @@ public class Button : ISelectable
     }
     public void UpdateSelection(MouseState MS)
     {
-        throw new NotImplementedException();
+        Bounds = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
     }
 }

@@ -85,6 +85,7 @@ namespace GoFishRefresh.Core
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            Textures.LoadContent(Content);
             mainGame.LoadContent(Content); 
             mainUI.LoadContent(Content);    
             base.LoadContent();

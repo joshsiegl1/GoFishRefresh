@@ -37,4 +37,34 @@ public class Card
     {
         return $"{Rank} of {Suit}";
     }
+
+    public string LoadString()
+    {
+        string rankString = Rank switch
+        {
+            Ranks.Ace => "A",
+            Ranks.Two => "2",
+            Ranks.Three => "3",
+            Ranks.Four => "4",
+            Ranks.Five => "5",
+            Ranks.Six => "6",
+            Ranks.Seven => "7",
+            Ranks.Eight => "8",
+            Ranks.Nine => "9",
+            Ranks.Ten => "10",
+            Ranks.Jack => "J",
+            Ranks.Queen => "Q",
+            Ranks.King => "K",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        string suitString = Suit switch
+        {
+            Suits.Hearts => "H",
+            Suits.Diamonds => "D",
+            Suits.Clubs => "C",
+            Suits.Spades => "S",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        return $"{rankString}{suitString}";
+    }
 }
