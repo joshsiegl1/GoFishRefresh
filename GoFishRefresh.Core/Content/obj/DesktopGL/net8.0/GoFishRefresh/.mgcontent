@@ -54,6 +54,7 @@
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/KD.png</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/KH.png</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/KS.png</File>
+    <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/pixel.png</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QC.png</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QD.png</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/QH.png</File>
@@ -61,6 +62,7 @@
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/ShowHandsButton.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

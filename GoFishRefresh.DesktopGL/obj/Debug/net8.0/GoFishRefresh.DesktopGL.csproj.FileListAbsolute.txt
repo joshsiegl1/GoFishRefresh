@@ -89,3 +89,4 @@ C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\bin\Debu
 C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\bin\Debug\net8.0\Content\cardback.xnb
 C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\obj\Debug\net8.0\GoFishRefresh.DesktopGL.sourcelink.json
 C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\bin\Debug\net8.0\Content\ShowHandsButton.xnb
+C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\bin\Debug\net8.0\Content\pixel.xnb
