@@ -23,7 +23,7 @@ public class PlayerCard : ISelectable
     }
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(texture, position, Color.White);
+        spriteBatch.Draw(texture, position, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.DisplayCardLayerDepth);
     }
     public void LoadContent(ContentManager Content)
     {
@@ -54,10 +54,6 @@ public class PlayerCard : ISelectable
         };
         string textureName = $"{rankString}{suitString}";
         texture = Content.Load<Texture2D>($"{textureName}");
-    }
-    public void DrawCard(SpriteBatch spriteBatch)
-    {
-        spriteBatch.Draw(texture, position, Color.White);
     }
     public void Select()
     {

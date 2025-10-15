@@ -7,7 +7,9 @@ public static class Textures
 {
     public static Texture2D CardBack;
     //This is used for the background of the hands screen
-    public static Texture2D pixel; 
+    public static Texture2D pixel;
+
+    public static Texture2D background; 
     public static Texture2D ShowHandsButton;
     #region Card Textures
     public static Texture2D AS;
@@ -129,6 +131,7 @@ public static class Textures
         CardBack = Content.Load<Texture2D>("cardback");
         ShowHandsButton = Content.Load<Texture2D>("ShowHandsButton");
         pixel = Content.Load<Texture2D>("pixel");
+        background = Content.Load<Texture2D>("background");
         #region Card Textures
         AS = Content.Load<Texture2D>("AS");
         AC = Content.Load<Texture2D>("AC");

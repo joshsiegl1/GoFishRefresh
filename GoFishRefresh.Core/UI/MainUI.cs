@@ -42,6 +42,8 @@ namespace GoFishRefresh.Core.UI
             cardSelector.Draw(spriteBatch);
             if (showHands)
             {
+                spriteBatch.Draw(Textures.background, new Rectangle(0, 0, 1920, 1080), null, Color.Black * 0.5f, 0f,
+                    Vector2.Zero, SpriteEffects.None, Global.BackgroundLayerDepth);
                 hands.Draw(spriteBatch);
             }
         }

@@ -68,7 +68,7 @@ public class Hands
         foreach (var card in hand)
         {
             Texture2D cardTexture = Textures.GetCardTexture(card);
-            spriteBatch.Draw(cardTexture, position, null, Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
+            spriteBatch.Draw(cardTexture, position, null, Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, Global.HandsLayerDepth);
             position.X += (cardTexture.Width / 2) + 10; // Move right for the next card
         }
 

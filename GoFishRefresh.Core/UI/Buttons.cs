@@ -19,7 +19,7 @@ public class Button : ISelectable
     }
     public void Draw(SpriteBatch spritebatch)
     {
-        spritebatch.Draw(texture, position, Color.White);
+        spritebatch.Draw(texture, position, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.ShowCardButtonLayerDepth);
     }
     public void Select()
     {

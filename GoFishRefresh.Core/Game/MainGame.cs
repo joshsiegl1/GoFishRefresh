@@ -43,11 +43,11 @@ public class MainGame
     {
         foreach (var pCard in playerHand)
         {
-            pCard.DrawCard(spriteBatch);
+            pCard.Draw(spriteBatch);
         }
         foreach (var aCard in aiHand)
         {
-            aCard.DrawCard(spriteBatch);
+            aCard.Draw(spriteBatch);
         }
     }
 }

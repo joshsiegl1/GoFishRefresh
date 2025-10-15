@@ -14,8 +14,8 @@ public class AiCard
         this.card = card;
         this.position = position;
     }
-    public void DrawCard(SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(Texture, position, Color.White);
+        spriteBatch.Draw(Texture, position, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
     }
 }
