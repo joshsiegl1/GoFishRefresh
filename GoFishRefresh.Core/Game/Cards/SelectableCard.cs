@@ -50,7 +50,7 @@ public class SelectableCard : ISelectable
     }
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(texture, deckPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.DisplayCardLayerDepth);
+        spriteBatch.Draw(texture, deckPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.CardSelectorLayerDepth);
     }
     public void Select()
     {

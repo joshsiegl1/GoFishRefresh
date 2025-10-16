@@ -59,7 +59,7 @@ public class Hands
         RoyalFlush.Add(new Card(Card.Suits.Diamonds, Card.Ranks.Ace));
     }
 
-    private void DrawHand(SpriteBatch spriteBatch, string title, List<Card> hand, Vector2 position)
+    private void DrawHand(SpriteBatch spriteBatch, string title, List<Card> hand, Vector2 position, float Fade)
     {
         // Draw the title of the hand
         //spriteBatch.DrawString(GameAssets.Font, title, position, Color.White);
@@ -68,31 +68,31 @@ public class Hands
         foreach (var card in hand)
         {
             Texture2D cardTexture = Textures.GetCardTexture(card);
-            spriteBatch.Draw(cardTexture, position, null, Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, Global.HandsLayerDepth);
+            spriteBatch.Draw(cardTexture, position, null, Color.White * Fade, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, Global.HandsLayerDepth);
             position.X += (cardTexture.Width / 2) + 10; // Move right for the next card
         }
 
         position.X = 50; // Reset X position for the next hand
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch, float Fade)
     {
         Vector2 position = new Vector2(50, 50);
 
-        DrawHand(spriteBatch, "Two of a Kind", TwoOfAKind, position);
+        DrawHand(spriteBatch, "Two of a Kind", TwoOfAKind, position, Fade);
         position.Y += 200;
-        DrawHand(spriteBatch, "Three of a Kind", ThreeOfAKind, position);
+        DrawHand(spriteBatch, "Three of a Kind", ThreeOfAKind, position, Fade);
         position.Y += 200;
-        DrawHand(spriteBatch, "Four of a Kind", FourOfAKind, position);
+        DrawHand(spriteBatch, "Four of a Kind", FourOfAKind, position, Fade);
         position.Y += 200;
-        DrawHand(spriteBatch, "Full House", FullHouse, position);
+        DrawHand(spriteBatch, "Full House", FullHouse, position, Fade);
         position = new Vector2(1110, 50); 
-        DrawHand(spriteBatch, "Straight", Straight, position);
+        DrawHand(spriteBatch, "Straight", Straight, position, Fade);
         position.Y += 200;
-        DrawHand(spriteBatch, "Flush", Flush, position);
+        DrawHand(spriteBatch, "Flush", Flush, position, Fade);
         position.Y += 200;
-        DrawHand(spriteBatch, "Straight Flush", StraightFlush, position);
+        DrawHand(spriteBatch, "Straight Flush", StraightFlush, position, Fade);
         position.Y += 200;
-        DrawHand(spriteBatch, "Royal Flush", RoyalFlush, position);
+        DrawHand(spriteBatch, "Royal Flush", RoyalFlush, position, Fade);
     }
 }

@@ -5,6 +5,7 @@ public static class Global
     public const float HandsLayerDepth = 1.0f;
     public const float ShowCardButtonLayerDepth = 1.0f;
     public const float BackgroundLayerDepth = 0.95f;
+    public const float CardSelectorLayerDepth = 0.92f;
     public const float DisplayCardLayerDepth = 0.9f;
     public static Matrix createTransformMatrix(GraphicsDeviceManager graphics)
     {
