@@ -37,10 +37,6 @@ public class HandMatcher
 
         if (hand.Count == 5)
         {
-            if (hand[0].Rank == hand[1].Rank && hand[0].Rank == hand[2].Rank &&
-                hand[3].Rank == hand[4].Rank)
-                return HandType.FullHouse;
-
             int SpadeCount, HeartCount, ClubCount, DiamondCount;
             SpadeCount = HeartCount = ClubCount = DiamondCount = 0;
             int TwoCount, ThreeCount, FourCount, FiveCount, SixCount, SevenCount, EightCount, NineCount, TenCount, JackCount, QueenCount, KingCount, AceCount;
@@ -66,6 +62,17 @@ public class HandMatcher
                 if (hand[i].Rank == Card.Ranks.Queen) QueenCount++;
                 if (hand[i].Rank == Card.Ranks.King) KingCount++;
                 if (hand[i].Rank == Card.Ranks.Ace) AceCount++;
+
+                //This probably works
+                if (TwoCount > 2 || ThreeCount > 2 || FourCount > 2 || FiveCount > 2 || SixCount > 2 ||
+                    SevenCount > 2 || EightCount > 2 || NineCount > 2 || TenCount > 2 || JackCount > 2 ||
+                    QueenCount > 2 || KingCount > 2 || AceCount > 2)
+                {
+                    if (TwoCount == 3 || ThreeCount == 3 || FourCount == 3 || FiveCount == 3 || SixCount == 3 ||
+                        SevenCount == 3 || EightCount == 3 || NineCount == 3 || TenCount == 3 || JackCount == 3 ||
+                        QueenCount == 3 || KingCount == 3 || AceCount == 3)
+                        return HandType.FullHouse;
+                }
 
                 if (TenCount > 0 && JackCount > 0 && QueenCount > 0 && KingCount > 0 && AceCount > 0)
                 {
