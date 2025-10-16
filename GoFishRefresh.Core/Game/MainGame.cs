@@ -24,7 +24,7 @@ public class MainGame
         for (int i = 0; i < HandSize; i++)
         {
             Card playerCard = deck.DrawCard();
-            PlayerCard pCard = new PlayerCard(playerCard, new Vector2(50 + i * 240, 400));
+            PlayerCard pCard = new PlayerCard(playerCard, new Vector2(50 + i * 240, 700));
             playerHand.Add(pCard);
             Card aiCard = deck.DrawCard();
             AiCard aCard = new AiCard(aiCard, new Vector2(50 + i * 240, 50));

@@ -16,6 +16,6 @@ public class AiCard
     }
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(Texture, position, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+        spriteBatch.Draw(Texture, position, null, Color.White, 0f, Vector2.Zero, Global.CardScale, SpriteEffects.None, Global.DisplayCardLayerDepth);
     }
 }

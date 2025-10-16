@@ -19,7 +19,7 @@ public class CardSelector : ISelectable
     public CardSelector()
     {
         selectableCards = new List<SelectableCard>();
-        position = new Vector2(100, 100);
+        position = new Vector2(1400, 325);
         foreach (Card.Suits suit in System.Enum.GetValues(typeof(Card.Suits)))
         {
             foreach (Card.Ranks rank in System.Enum.GetValues(typeof(Card.Ranks)))

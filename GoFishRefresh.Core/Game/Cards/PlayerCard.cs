@@ -23,7 +23,7 @@ public class PlayerCard : ISelectable
     }
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(texture, position, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.DisplayCardLayerDepth);
+        spriteBatch.Draw(texture, position, null, Color.White, 0f, Vector2.Zero, Global.CardScale, SpriteEffects.None, Global.DisplayCardLayerDepth);
     }
     public void LoadContent(ContentManager Content)
     {

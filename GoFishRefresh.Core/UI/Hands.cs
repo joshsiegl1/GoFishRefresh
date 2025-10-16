@@ -77,7 +77,7 @@ public class Hands
 
     public void Draw(SpriteBatch spriteBatch, float Fade)
     {
-        Vector2 position = new Vector2(50, 50);
+        Vector2 position = new Vector2(50, 150);
 
         DrawHand(spriteBatch, "Two of a Kind", TwoOfAKind, position, Fade);
         position.Y += 200;
@@ -86,7 +86,7 @@ public class Hands
         DrawHand(spriteBatch, "Four of a Kind", FourOfAKind, position, Fade);
         position.Y += 200;
         DrawHand(spriteBatch, "Full House", FullHouse, position, Fade);
-        position = new Vector2(1110, 50); 
+        position = new Vector2(1110, 150); 
         DrawHand(spriteBatch, "Straight", Straight, position, Fade);
         position.Y += 200;
         DrawHand(spriteBatch, "Flush", Flush, position, Fade);

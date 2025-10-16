@@ -7,6 +7,8 @@ public static class Global
     public const float BackgroundLayerDepth = 0.95f;
     public const float CardSelectorLayerDepth = 0.92f;
     public const float DisplayCardLayerDepth = 0.9f;
+
+    public const float CardScale = 0.75f; 
     public static Matrix createTransformMatrix(GraphicsDeviceManager graphics)
     {
         // Virtual resolution - the resolution the game is designed for
