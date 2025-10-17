@@ -30,11 +30,13 @@ public class Button : ISelectable
         IsSelected = false;
     }
     private MouseState previousMS; 
-    public void UpdateSelection(MouseState MS)
+    public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics)
     {
+        Matrix invMatrix = Matrix.Invert(Global.createTransformMatrix(graphics));
         MS = Mouse.GetState();
         Bounds = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
-        if (Bounds.Contains(MS.Position))
+        Vector2 mouseWorld = Vector2.Transform(new Vector2(MS.X, MS.Y), invMatrix);
+        if (Bounds.Contains(mouseWorld))
         {
             Mouse.SetCursor(MouseCursor.Hand);
             IsHighlighted = true;

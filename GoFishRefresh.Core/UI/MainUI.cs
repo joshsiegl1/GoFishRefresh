@@ -27,9 +27,9 @@ namespace GoFishRefresh.Core.UI
             showHands = !showHands;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
         {
-            btnShowHands.UpdateSelection(MS);
+            btnShowHands.UpdateSelection(MS, graphics);
             cardSelector.Update(gameTime);
             if (showHands && Fade < 1f)
             {

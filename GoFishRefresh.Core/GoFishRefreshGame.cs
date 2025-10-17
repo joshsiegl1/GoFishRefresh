@@ -102,7 +102,8 @@ namespace GoFishRefresh.Core
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
                 || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            mainUI.Update(gameTime);
+            mainGame.Update(gameTime, graphicsDeviceManager);
+            mainUI.Update(gameTime, graphicsDeviceManager);
             base.Update(gameTime);
         }
         /// <summary>

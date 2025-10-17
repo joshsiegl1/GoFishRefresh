@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
+using System;
 #endregion
 public class MainGame
 {
@@ -10,6 +12,7 @@ public class MainGame
     private List<PlayerCard> playerHand;
     private List<AiCard> aiHand;
     private const int HandSize = 7;
+    private MouseState MS; 
     public MainGame()
     {
         deck = new Deck();
@@ -29,6 +32,14 @@ public class MainGame
             Card aiCard = deck.DrawCard();
             AiCard aCard = new AiCard(aiCard, new Vector2(50 + i * 240, 50));
             aiHand.Add(aCard);
+        }
+    }
+
+    public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
+    {
+        foreach (PlayerCard pCard in playerHand)
+        {
+            pCard.UpdateSelection(MS, graphics); 
         }
     }
     public void LoadContent(ContentManager Content)

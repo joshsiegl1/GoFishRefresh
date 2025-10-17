@@ -60,7 +60,7 @@ public class SelectableCard : ISelectable
     {
         IsSelected = false; 
     }
-    public void UpdateSelection(MouseState MS)
+    public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics)
     {
         if (Bounds.Contains(MS.Position))
         {

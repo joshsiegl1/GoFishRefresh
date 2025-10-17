@@ -45,6 +45,7 @@
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/AH.png</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/AS.png</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/background.png</File>
+    <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/card_selected.png</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/cardback.png</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/Fonts/Hud.spritefont</File>
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/JC.png</File>
@@ -63,6 +64,7 @@
     <File>C:/Users/joshs/Documents/projects/GoFishRefresh/GoFishRefresh.Core/Content/ShowHandsButton.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

@@ -7,8 +7,7 @@ public interface ISelectable
 {
     bool IsSelected { get; set; }
     bool IsHighlighted { get; set; }
-    Rectangle Bounds { get; }
     void Select();
     void Deselect();
-    void UpdateSelection(MouseState MS); 
+    void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics); 
 }

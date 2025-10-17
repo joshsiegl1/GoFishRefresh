@@ -74,7 +74,7 @@ public class CardSelector : ISelectable
         throw new System.NotImplementedException();
     }
 
-    public void UpdateSelection(MouseState MS)
+    public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics)
     {
         throw new System.NotImplementedException();
     }
