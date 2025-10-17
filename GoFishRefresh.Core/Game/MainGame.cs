@@ -11,6 +11,7 @@ public class MainGame
     private Deck deck;
     private List<PlayerCard> playerHand;
     private List<AiCard> aiHand;
+    private List<Card> selectedCards;
     private const int HandSize = 7;
     private MouseState MS; 
     public MainGame()
@@ -19,6 +20,7 @@ public class MainGame
         deck.Shuffle();
         playerHand = new List<PlayerCard>();
         aiHand = new List<AiCard>();
+        selectedCards = new List<Card>();
         Deal();
     }
     // I'm using composition here rather than inheritance for PlayerCard and AiCard
@@ -28,6 +30,16 @@ public class MainGame
         {
             Card playerCard = deck.DrawCard();
             PlayerCard pCard = new PlayerCard(playerCard, new Vector2(50 + i * 240, 700));
+            pCard.onSelect += (s, e) => {
+                selectedCards.Add(pCard.Card);
+                Console.WriteLine("Selected a card: " + pCard.Card + " Count: " + selectedCards.Count);
+                Console.WriteLine(HandMatcher.IsMatch(selectedCards)); 
+            };
+            pCard.onDeselect += (s, e) => {
+                selectedCards.Remove(pCard.Card);
+                Console.WriteLine("Deselected a card: " + pCard.Card + " Count: " + selectedCards.Count); 
+                Console.WriteLine(HandMatcher.IsMatch(selectedCards)); 
+            };
             playerHand.Add(pCard);
             Card aiCard = deck.DrawCard();
             AiCard aCard = new AiCard(aiCard, new Vector2(50 + i * 240, 50));

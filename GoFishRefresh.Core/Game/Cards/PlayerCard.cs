@@ -15,7 +15,8 @@ public class PlayerCard : ISelectable
     public Texture2D Texture { get { return texture; } set { texture = value; } }
     public bool IsSelected { get; set; } = false;
     public bool IsHighlighted { get; set; } = false;
-    public Rectangle Bounds {get; set; } 
+    public Rectangle Bounds { get; set; } 
+    public event EventHandler onSelect, onDeselect;
     public PlayerCard(Card card, Vector2 position)
     {
         this.card = card;
@@ -62,10 +63,12 @@ public class PlayerCard : ISelectable
     public void Select()
     {
         IsSelected = true;
+        onSelect?.Invoke(this, EventArgs.Empty);
     }
     public void Deselect()
     {
         IsSelected = false;
+        onDeselect?.Invoke(this, EventArgs.Empty);
     }
     private MouseState previousMS;
     public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics)
