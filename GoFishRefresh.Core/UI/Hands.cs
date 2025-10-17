@@ -8,6 +8,7 @@ public class Hands
 {
     public List<Card> TwoOfAKind = new List<Card>();
     public List<Card> ThreeOfAKind = new List<Card>();
+    public List<Card> TwoPair = new List<Card>(); 
     public List<Card> FourOfAKind = new List<Card>();
     public List<Card> FullHouse = new List<Card>();
     public List<Card> Straight = new List<Card>();
@@ -22,6 +23,11 @@ public class Hands
         ThreeOfAKind.Add(new Card(Card.Suits.Hearts, Card.Ranks.King));
         ThreeOfAKind.Add(new Card(Card.Suits.Spades, Card.Ranks.King));
         ThreeOfAKind.Add(new Card(Card.Suits.Diamonds, Card.Ranks.King));
+
+        TwoPair.Add(new Card(Card.Suits.Hearts, Card.Ranks.Two));
+        TwoPair.Add(new Card(Card.Suits.Spades, Card.Ranks.Two));
+        TwoPair.Add(new Card(Card.Suits.Hearts, Card.Ranks.Three));
+        TwoPair.Add(new Card(Card.Suits.Spades, Card.Ranks.Three));
 
         FourOfAKind.Add(new Card(Card.Suits.Hearts, Card.Ranks.Queen));
         FourOfAKind.Add(new Card(Card.Suits.Spades, Card.Ranks.Queen));
@@ -83,10 +89,14 @@ public class Hands
         position.Y += 200;
         DrawHand(spriteBatch, "Three of a Kind", ThreeOfAKind, position, Fade);
         position.Y += 200;
-        DrawHand(spriteBatch, "Four of a Kind", FourOfAKind, position, Fade);
+        DrawHand(spriteBatch, "Two Pair", TwoPair, position, Fade);
         position.Y += 200;
+        DrawHand(spriteBatch, "Four of a Kind", FourOfAKind, position, Fade);
+
+        position = new Vector2(1110, 50);
+
         DrawHand(spriteBatch, "Full House", FullHouse, position, Fade);
-        position = new Vector2(1110, 150); 
+        position.Y += 200;
         DrawHand(spriteBatch, "Straight", Straight, position, Fade);
         position.Y += 200;
         DrawHand(spriteBatch, "Flush", Flush, position, Fade);

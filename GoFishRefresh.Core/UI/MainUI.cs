@@ -17,7 +17,7 @@ namespace GoFishRefresh.Core.UI
         float Fade = 0f; 
         public MainUI()
         {
-            btnShowHands = new Button(Vector2.Zero);
+            btnShowHands = new Button(new Vector2(50, 50));
             btnShowHands.onClick += onShowHandsClick;
             cardSelector = new CardSelector();
             hands = new Hands();
