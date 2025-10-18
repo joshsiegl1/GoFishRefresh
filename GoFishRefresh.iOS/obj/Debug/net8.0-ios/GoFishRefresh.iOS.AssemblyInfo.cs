@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GoFishRefresh.iOS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e81b377a7aba90b3fd5366588da7f4be0cb7215a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c45ad00234568039379aa1b9f43e92d3062e583b")]
 [assembly: System.Reflection.AssemblyProductAttribute("GoFishRefresh.iOS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GoFishRefresh.iOS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -33,6 +33,10 @@ public class HandMatcher
         {
             if (hand[0].Rank == hand[1].Rank && hand[0].Rank == hand[2].Rank && hand[0].Rank == hand[3].Rank)
                 return HandType.FourOfAKind;
+            if (hand[0].Rank == hand[1].Rank && hand[2].Rank == hand[3].Rank 
+                || hand[0].Rank == hand[2].Rank && hand[1].Rank == hand[3].Rank 
+                || hand[0].Rank == hand[3].Rank && hand[1].Rank == hand[2].Rank)
+                return HandType.TwoPair;
         }
 
         if (hand.Count == 5)
@@ -105,7 +109,36 @@ public class HandMatcher
         }
 
 
-        return HandType.None; 
+        return HandType.None;
+    }
+    
+    public static string ToString(HandType handType)
+    {
+        switch (handType)
+        {
+            case HandType.None:
+                return "No Match";
+            case HandType.Pair:
+                return "Pair";
+            case HandType.ThreeOfAKind:
+                return "Three of a Kind";
+            case HandType.FourOfAKind:
+                return "Four of a Kind";
+            case HandType.TwoPair:
+                return "Two Pair";
+            case HandType.FullHouse:
+                return "Full House";
+            case HandType.Straight:
+                return "Straight";
+            case HandType.Flush:
+                return "Flush";
+            case HandType.StraightFlush:
+                return "Straight Flush";
+            case HandType.RoyalFlush:
+                return "Royal Flush";
+            default:
+                return "";
+        }
     }
 
     public enum HandType
@@ -114,6 +147,7 @@ public class HandMatcher
         Pair,
         ThreeOfAKind,
         FourOfAKind,
+        TwoPair, 
         FullHouse,
         Straight,
         Flush,

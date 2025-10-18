@@ -86,6 +86,7 @@ namespace GoFishRefresh.Core
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Textures.LoadContent(Content);
+            Fonts.LoadFonts(Content); 
             mainGame.LoadContent(Content); 
             mainUI.LoadContent(Content);    
             base.LoadContent();

@@ -13,7 +13,8 @@ public class MainGame
     private List<AiCard> aiHand;
     private List<Card> selectedCards;
     private const int HandSize = 7;
-    private MouseState MS; 
+    private MouseState MS;
+    string handMatch = ""; 
     public MainGame()
     {
         deck = new Deck();
@@ -33,12 +34,14 @@ public class MainGame
             pCard.onSelect += (s, e) => {
                 selectedCards.Add(pCard.Card);
                 Console.WriteLine("Selected a card: " + pCard.Card + " Count: " + selectedCards.Count);
-                Console.WriteLine(HandMatcher.IsMatch(selectedCards)); 
+                Console.WriteLine(HandMatcher.IsMatch(selectedCards));
+                handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards)); 
             };
             pCard.onDeselect += (s, e) => {
                 selectedCards.Remove(pCard.Card);
-                Console.WriteLine("Deselected a card: " + pCard.Card + " Count: " + selectedCards.Count); 
+                Console.WriteLine("Deselected a card: " + pCard.Card + " Count: " + selectedCards.Count);
                 Console.WriteLine(HandMatcher.IsMatch(selectedCards)); 
+                handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
             };
             playerHand.Add(pCard);
             Card aiCard = deck.DrawCard();
@@ -64,6 +67,7 @@ public class MainGame
     }
     public void Draw(SpriteBatch spriteBatch)
     {
+        spriteBatch.DrawString(Fonts.MainFont, "Selected Hand Type: " + handMatch, new Vector2(50, 600), Color.Black, 0f, Vector2.Zero, 2f, SpriteEffects.None, Global.HandsLayerDepth);
         foreach (var pCard in playerHand)
         {
             pCard.Draw(spriteBatch);

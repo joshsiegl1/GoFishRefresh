@@ -83,7 +83,7 @@ public class Hands
 
     public void Draw(SpriteBatch spriteBatch, float Fade)
     {
-        Vector2 position = new Vector2(50, 150);
+        Vector2 position = new Vector2(50, 200);
 
         DrawHand(spriteBatch, "Two of a Kind", TwoOfAKind, position, Fade);
         position.Y += 200;
