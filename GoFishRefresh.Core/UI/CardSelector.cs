@@ -5,17 +5,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 #endregion
-public class CardSelector : ISelectable
+public class CardSelector
 {
     MouseState MS, previousMS;
     private int drawIndex = 0; 
     private List<SelectableCard> selectableCards;
     private Vector2 position;
-    public bool IsSelected { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-    public bool IsHighlighted { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-    public Rectangle Bounds => throw new System.NotImplementedException();
-
     public CardSelector()
     {
         selectableCards = new List<SelectableCard>();
@@ -62,20 +57,5 @@ public class CardSelector : ISelectable
     public void Draw(SpriteBatch spriteBatch)
     {
         selectableCards[drawIndex].Draw(spriteBatch);
-    }
-
-    public void Select()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Deselect()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics)
-    {
-        throw new System.NotImplementedException();
     }
 }
