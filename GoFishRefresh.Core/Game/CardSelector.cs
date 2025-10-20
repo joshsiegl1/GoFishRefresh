@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
+using System;
 #endregion
 public class CardSelector
 {
@@ -11,6 +12,9 @@ public class CardSelector
     private int drawIndex = 0; 
     private List<SelectableCard> selectableCards;
     private Vector2 position;
+    public Card SelectedCard = null;
+    bool isCardChecked = false; 
+    public event EventHandler onCardSelected;
     public CardSelector()
     {
         selectableCards = new List<SelectableCard>();
@@ -19,8 +23,25 @@ public class CardSelector
         {
             foreach (Card.Ranks rank in System.Enum.GetValues(typeof(Card.Ranks)))
             {
-                selectableCards.Add(new SelectableCard(new Card(suit, rank), position));
+                SelectableCard card = new SelectableCard(new Card(suit, rank), position);
+                card.onSelect += (s, e) =>
+                {
+                    SelectedCard = card.Card;
+                    isCardChecked = false; 
+                    onCardSelected?.Invoke(this, EventArgs.Empty);
+                    Console.WriteLine($"Selected Card: {SelectedCard.Rank} of {SelectedCard.Suit}");
+                };
+                selectableCards.Add(card);
             }
+        }
+    }
+    
+    public void CheckSelection()
+    {
+        if (!isCardChecked && SelectedCard != null)
+        {
+            Console.WriteLine($"Card {SelectedCard.Rank} of {SelectedCard.Suit} has been checked against AI Hand");
+            isCardChecked = true; 
         }
     }
 
@@ -47,6 +68,8 @@ public class CardSelector
         }
 
         selectableCards[drawIndex].UpdateSelection(MS, graphics);
+
+        CheckSelection();
 
         previousMS = MS;
     }

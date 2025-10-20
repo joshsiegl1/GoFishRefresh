@@ -76,7 +76,7 @@ public class SelectableCard : ISelectable
         {
             IsHighlighted = true;
             Mouse.SetCursor(MouseCursor.Hand);
-            if (MS.LeftButton == ButtonState.Pressed)
+            if (MS.LeftButton == ButtonState.Pressed && previousMS.LeftButton == ButtonState.Released)
             {
                 if (!IsSelected)
                     Select();

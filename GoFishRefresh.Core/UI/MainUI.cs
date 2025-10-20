@@ -12,14 +12,12 @@ namespace GoFishRefresh.Core.UI
         MouseState MS; 
         Button btnShowHands;
         bool showHands = false;
-        CardSelector cardSelector;
         Hands hands;
         float Fade = 0f; 
         public MainUI()
         {
             btnShowHands = new Button(new Vector2(50, 50));
             btnShowHands.onClick += onShowHandsClick;
-            cardSelector = new CardSelector();
             hands = new Hands();
         }
         private void onShowHandsClick(object sender, EventArgs e)
@@ -30,7 +28,6 @@ namespace GoFishRefresh.Core.UI
         public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
         {
             btnShowHands.UpdateSelection(MS, graphics);
-            cardSelector.Update(gameTime, graphics);
             if (showHands && Fade < 1f)
             {
                 Fade += 0.05f;
@@ -44,12 +41,10 @@ namespace GoFishRefresh.Core.UI
         public void LoadContent(ContentManager Content)
         {
             btnShowHands.Texture = Textures.ShowHandsButton;
-            cardSelector.LoadContent(Content);
         }
         public void Draw(SpriteBatch spriteBatch)
         {
             btnShowHands.Draw(spriteBatch);
-            cardSelector.Draw(spriteBatch);
             spriteBatch.Draw(Textures.background, new Rectangle(0, 0, 1920, 1080), null, Color.Black * 0.5f * Fade, 0f,
                 Vector2.Zero, SpriteEffects.None, Global.BackgroundLayerDepth);
             hands.Draw(spriteBatch, Fade);

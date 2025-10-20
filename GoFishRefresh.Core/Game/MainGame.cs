@@ -13,6 +13,7 @@ public class MainGame
     private List<AiCard> aiHand;
     private List<Card> selectedCards;
     private const int HandSize = 7;
+    private CardSelector cardSelector;
     private MouseState MS;
     string handMatch = ""; 
     public MainGame()
@@ -22,11 +23,17 @@ public class MainGame
         playerHand = new List<PlayerCard>();
         aiHand = new List<AiCard>();
         selectedCards = new List<Card>();
+        cardSelector = new CardSelector();
         Deal();
     }
     // I'm using composition here rather than inheritance for PlayerCard and AiCard
     private void Deal()
     {
+        cardSelector.onCardSelected += (s, e) =>
+        {
+            Card selected = cardSelector.SelectedCard;
+            Console.WriteLine($"MainGame detected selected card: {selected.Rank} of {selected.Suit}");
+        };
         for (int i = 0; i < HandSize; i++)
         {
             Card playerCard = deck.DrawCard();
@@ -52,6 +59,7 @@ public class MainGame
 
     public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
     {
+        cardSelector.Update(gameTime, graphics);
         foreach (PlayerCard pCard in playerHand)
         {
             pCard.UpdateSelection(MS, graphics); 
@@ -59,6 +67,7 @@ public class MainGame
     }
     public void LoadContent(ContentManager Content)
     {
+        cardSelector.LoadContent(Content);
         foreach (var pCard in playerHand)
         {
             pCard.LoadContent(Content);
@@ -67,6 +76,7 @@ public class MainGame
     }
     public void Draw(SpriteBatch spriteBatch)
     {
+        cardSelector.Draw(spriteBatch);
         spriteBatch.DrawString(Fonts.MainFont, "Selected Hand Type: " + handMatch, new Vector2(50, 600), Color.Black, 0f, Vector2.Zero, 2f, SpriteEffects.None, Global.HandsLayerDepth);
         foreach (var pCard in playerHand)
         {
