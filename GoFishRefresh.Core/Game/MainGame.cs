@@ -15,7 +15,7 @@ public class MainGame
     private const int HandSize = 7;
     private CardSelector cardSelector;
     private MouseState MS;
-    string handMatch = ""; 
+    string handMatch = "";
     public MainGame()
     {
         deck = new Deck();
@@ -26,6 +26,21 @@ public class MainGame
         cardSelector = new CardSelector();
         Deal();
     }
+    
+    private void CheckSelection(Card card)
+    {
+        foreach (var aiCard in aiHand)
+        {
+            if (aiCard.Card.Rank == card.Rank && aiCard.Card.Suit == card.Suit)
+            {
+                Console.WriteLine($"Match found: Player's {card.Rank} matches AI's {aiCard.Card.Rank}");
+                Card newCard = aiCard.Card;
+                aiHand.Remove(aiCard);
+                playerHand.Add(new PlayerCard(newCard, new Vector2(50 + (playerHand.Count) * 240, 700)));
+                return;
+            }
+        }
+    }
     // I'm using composition here rather than inheritance for PlayerCard and AiCard
     private void Deal()
     {
@@ -33,6 +48,7 @@ public class MainGame
         {
             Card selected = cardSelector.SelectedCard;
             Console.WriteLine($"MainGame detected selected card: {selected.Rank} of {selected.Suit}");
+            CheckSelection(selected);
         };
         for (int i = 0; i < HandSize; i++)
         {
