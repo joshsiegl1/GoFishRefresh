@@ -24,7 +24,7 @@ public class CardSelector
         }
     }
 
-    public void Update(GameTime gameTime)
+    public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
     {
         MS = Mouse.GetState();
 

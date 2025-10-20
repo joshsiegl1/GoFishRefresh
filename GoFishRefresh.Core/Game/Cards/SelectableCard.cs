@@ -1,4 +1,5 @@
 #region Using Statements
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,9 +11,10 @@ public class SelectableCard : ISelectable
     public Card Card { get { return card; } }
     public bool IsSelected { get; set; } = false;
     public bool IsHighlighted { get; set; } = false;
-    public Rectangle Bounds => new Rectangle((int)deckPosition.X, (int)deckPosition.Y, texture.Width, texture.Height); 
+    public Rectangle Bounds { get; set; }
     private Texture2D texture;
     private Vector2 deckPosition;
+    public event EventHandler onSelect, onDeselect;
     public SelectableCard(Card card, Vector2 deckPosition)
     {
         this.card = card;
@@ -55,14 +57,22 @@ public class SelectableCard : ISelectable
     public void Select()
     {
         IsSelected = true;
+        onSelect?.Invoke(this, EventArgs.Empty);
     }
     public void Deselect()
     {
-        IsSelected = false; 
+        IsSelected = false;
+        onDeselect?.Invoke(this, EventArgs.Empty);
     }
+    
+    private MouseState previousMS;
     public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics)
     {
-        if (Bounds.Contains(MS.Position))
+        Matrix invMatrix = Matrix.Invert(Global.createTransformMatrix(graphics));
+        MS = Mouse.GetState();
+        Bounds = new Rectangle((int)deckPosition.X, (int)deckPosition.Y, 240, 336); 
+        Vector2 mouseWorld = Vector2.Transform(new Vector2(MS.X, MS.Y), invMatrix);
+        if (Bounds.Contains(mouseWorld))
         {
             IsHighlighted = true;
             Mouse.SetCursor(MouseCursor.Hand);
@@ -79,5 +89,7 @@ public class SelectableCard : ISelectable
             IsHighlighted = false;
             Mouse.SetCursor(MouseCursor.Arrow);
         }
+
+        previousMS = MS;
     }
 }
