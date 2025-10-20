@@ -45,6 +45,9 @@ public class CardSelector
             }
             else drawIndex++;
         }
+
+        selectableCards[drawIndex].UpdateSelection(MS, graphics);
+
         previousMS = MS;
     }
     public void LoadContent(ContentManager Content)
