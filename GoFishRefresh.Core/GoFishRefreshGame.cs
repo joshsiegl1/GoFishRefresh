@@ -38,7 +38,7 @@ namespace GoFishRefresh.Core
         {
             IsMouseVisible = true;
             graphicsDeviceManager = new GraphicsDeviceManager(this);
-            mainGame = new MainGame();
+            mainGame = new MainGame(Content);
             mainUI = new MainUI();
             // Share GraphicsDeviceManager as a service.
             Services.AddService(typeof(GraphicsDeviceManager), graphicsDeviceManager);

@@ -16,7 +16,7 @@ public class MainGame
     private CardSelector cardSelector;
     private MouseState MS;
     string handMatch = "";
-    public MainGame()
+    public MainGame(ContentManager Content)
     {
         deck = new Deck();
         deck.Shuffle();
@@ -24,10 +24,10 @@ public class MainGame
         aiHand = new List<AiCard>();
         selectedCards = new List<Card>();
         cardSelector = new CardSelector();
-        Deal();
+        Deal(Content);
     }
     
-    private void CheckSelection(Card card)
+    private void CheckSelection(Card card, ContentManager Content)
     {
         foreach (var aiCard in aiHand)
         {
@@ -38,19 +38,20 @@ public class MainGame
                 aiHand.Remove(aiCard);
                 PlayerCard playerCard = new PlayerCard(newCard, new Vector2(50 + (playerHand.Count) * 240, 700));
                 // Load content for the new player card
+                playerCard.LoadContent(Content); 
                 playerHand.Add(playerCard);
                 return;
             }
         }
     }
     // I'm using composition here rather than inheritance for PlayerCard and AiCard
-    private void Deal()
+    private void Deal(ContentManager Content)
     {
         cardSelector.onCardSelected += (s, e) =>
         {
             Card selected = cardSelector.SelectedCard;
             Console.WriteLine($"MainGame detected selected card: {selected.Rank} of {selected.Suit}");
-            CheckSelection(selected);
+            CheckSelection(selected, Content);
         };
         for (int i = 0; i < HandSize; i++)
         {
