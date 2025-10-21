@@ -36,7 +36,9 @@ public class MainGame
                 Console.WriteLine($"Match found: Player's {card.Rank} matches AI's {aiCard.Card.Rank}");
                 Card newCard = aiCard.Card;
                 aiHand.Remove(aiCard);
-                playerHand.Add(new PlayerCard(newCard, new Vector2(50 + (playerHand.Count) * 240, 700)));
+                PlayerCard playerCard = new PlayerCard(newCard, new Vector2(50 + (playerHand.Count) * 240, 700));
+                // Load content for the new player card
+                playerHand.Add(playerCard);
                 return;
             }
         }
