@@ -13,6 +13,7 @@ public class MainGame
     private List<AiCard> aiHand;
     private List<Card> selectedCards;
     private const int HandSize = 7;
+    private const int HandSpacing = 180; 
     private CardSelector cardSelector;
     private MouseState MS;
     string handMatch = "";
@@ -36,7 +37,21 @@ public class MainGame
                 Console.WriteLine($"Match found: Player's {card.Rank} matches AI's {aiCard.Card.Rank}");
                 Card newCard = aiCard.Card;
                 aiHand.Remove(aiCard);
-                PlayerCard playerCard = new PlayerCard(newCard, new Vector2(50 + (playerHand.Count) * 240, 700));
+                PlayerCard playerCard = new PlayerCard(newCard, new Vector2(50 + (playerHand.Count) * HandSpacing, 700));
+                playerCard.onSelect += (s, e) =>
+                {
+                    selectedCards.Add(playerCard.Card);
+                    Console.WriteLine("Selected a card: " + playerCard.Card + " Count: " + selectedCards.Count);
+                    Console.WriteLine(HandMatcher.IsMatch(selectedCards));
+                    handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
+                };
+                playerCard.onDeselect += (s, e) =>
+                {
+                    selectedCards.Remove(playerCard.Card);
+                    Console.WriteLine("Deselected a card: " + playerCard.Card + " Count: " + selectedCards.Count);
+                    Console.WriteLine(HandMatcher.IsMatch(selectedCards));
+                    handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
+                };
                 // Load content for the new player card
                 playerCard.LoadContent(Content); 
                 playerHand.Add(playerCard);
@@ -56,7 +71,7 @@ public class MainGame
         for (int i = 0; i < HandSize; i++)
         {
             Card playerCard = deck.DrawCard();
-            PlayerCard pCard = new PlayerCard(playerCard, new Vector2(50 + i * 240, 700));
+            PlayerCard pCard = new PlayerCard(playerCard, new Vector2(50 + i * HandSpacing, 700));
             pCard.onSelect += (s, e) => {
                 selectedCards.Add(pCard.Card);
                 Console.WriteLine("Selected a card: " + pCard.Card + " Count: " + selectedCards.Count);
@@ -71,7 +86,7 @@ public class MainGame
             };
             playerHand.Add(pCard);
             Card aiCard = deck.DrawCard();
-            AiCard aCard = new AiCard(aiCard, new Vector2(50 + i * 240, 50));
+            AiCard aCard = new AiCard(aiCard, new Vector2(50 + i * HandSpacing, 50));
             aiHand.Add(aCard);
         }
     }
