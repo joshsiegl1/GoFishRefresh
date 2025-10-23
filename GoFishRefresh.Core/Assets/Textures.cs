@@ -11,7 +11,7 @@ public static class Textures
 
     public static Texture2D background;
     public static Texture2D ShowHandsButton;
-    
+    public static Texture2D ButtonBackground; 
     public static Texture2D CardSelected; 
     #region Card Textures
     public static Texture2D AS;
@@ -135,6 +135,7 @@ public static class Textures
         pixel = Content.Load<Texture2D>("pixel");
         CardSelected = Content.Load<Texture2D>("card_selected");
         background = Content.Load<Texture2D>("background");
+        ButtonBackground = Content.Load<Texture2D>("button_background");
         #region Card Textures
         AS = Content.Load<Texture2D>("AS");
         AC = Content.Load<Texture2D>("AC");
