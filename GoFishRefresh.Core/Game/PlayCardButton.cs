@@ -10,6 +10,7 @@ public class PlayCardButton : ISelectable
 {
     private SpriteFont font;
     private string text; 
+    public bool IsActive { get; set; } = false; 
     private Texture2D texture; 
     public Texture2D Texture { get { return texture; } set { texture = value; } }
     private Vector2 position;
@@ -33,6 +34,57 @@ public class PlayCardButton : ISelectable
     public void Select()
     {
         IsSelected = true;
+    }
+
+    public void SetActive(string HandMatch)
+    {
+        switch (HandMatch)
+        {
+            case "None":
+                text = "No Valid Hand";
+                IsActive = false;
+                break;
+            case "Pair":
+                text = "Play Pair";
+                IsActive = true;
+                break;
+            case "Three of a Kind":
+                text = "Play Three of a Kind";
+                IsActive = true;
+                break;
+            case "Four of a Kind":
+                text = "Play Four of a Kind";
+                IsActive = true;
+                break;
+            case "Two Pair":
+                text = "Play Two Pair";
+                IsActive = true;
+                break;
+            case "Full House":
+                text = "Play Full House";
+                IsActive = true;
+                break;
+            case "Flush":
+                text = "Play Flush";
+                IsActive = true;
+                break;
+            case "Straight":
+                text = "Play Straight";
+                IsActive = true;
+                break;
+            case "Straight Flush":
+                text = "Play Straight Flush";
+                IsActive = true;
+                break;
+            case "Royal Flush":
+                text = "Play Royal Flush";
+                IsActive = true;
+                break;
+            default:
+                text = "";
+                IsActive = false;
+                break;
+        }
     }
     private MouseState previousMS; 
     public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics)

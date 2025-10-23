@@ -13,8 +13,9 @@ public class MainGame
     private List<AiCard> aiHand;
     private List<Card> selectedCards;
     private const int HandSize = 7;
-    private const int HandSpacing = 180; 
+    private const int HandSpacing = 180;
     private CardSelector cardSelector;
+    private PlayCardButton playCardButton;
     private MouseState MS;
     string handMatch = "";
     public MainGame(ContentManager Content)
@@ -25,6 +26,7 @@ public class MainGame
         aiHand = new List<AiCard>();
         selectedCards = new List<Card>();
         cardSelector = new CardSelector();
+        playCardButton = new PlayCardButton(new Vector2(1400, 800), "Play Selected Cards");
         Deal(Content);
     }
     
@@ -41,16 +43,14 @@ public class MainGame
                 playerCard.onSelect += (s, e) =>
                 {
                     selectedCards.Add(playerCard.Card);
-                    Console.WriteLine("Selected a card: " + playerCard.Card + " Count: " + selectedCards.Count);
-                    Console.WriteLine(HandMatcher.IsMatch(selectedCards));
                     handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
+                    playCardButton.SetActive(handMatch); 
                 };
                 playerCard.onDeselect += (s, e) =>
                 {
                     selectedCards.Remove(playerCard.Card);
-                    Console.WriteLine("Deselected a card: " + playerCard.Card + " Count: " + selectedCards.Count);
-                    Console.WriteLine(HandMatcher.IsMatch(selectedCards));
                     handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
+                    playCardButton.SetActive(handMatch); 
                 };
                 // Load content for the new player card
                 playerCard.LoadContent(Content); 
@@ -65,7 +65,6 @@ public class MainGame
         cardSelector.onCardSelected += (s, e) =>
         {
             Card selected = cardSelector.SelectedCard;
-            Console.WriteLine($"MainGame detected selected card: {selected.Rank} of {selected.Suit}");
             CheckSelection(selected, Content);
         };
         for (int i = 0; i < HandSize; i++)
@@ -74,15 +73,13 @@ public class MainGame
             PlayerCard pCard = new PlayerCard(playerCard, new Vector2(50 + i * HandSpacing, 700));
             pCard.onSelect += (s, e) => {
                 selectedCards.Add(pCard.Card);
-                Console.WriteLine("Selected a card: " + pCard.Card + " Count: " + selectedCards.Count);
-                Console.WriteLine(HandMatcher.IsMatch(selectedCards));
-                handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards)); 
+                handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
+                playCardButton.SetActive(handMatch);
             };
             pCard.onDeselect += (s, e) => {
                 selectedCards.Remove(pCard.Card);
-                Console.WriteLine("Deselected a card: " + pCard.Card + " Count: " + selectedCards.Count);
-                Console.WriteLine(HandMatcher.IsMatch(selectedCards)); 
                 handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
+                playCardButton.SetActive(handMatch);
             };
             playerHand.Add(pCard);
             Card aiCard = deck.DrawCard();
