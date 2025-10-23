@@ -9,8 +9,10 @@ using System;
 public class PlayCardButton : ISelectable
 {
     private SpriteFont font;
-    private string text; 
-    public bool IsActive { get; set; } = false; 
+    private string text;
+    public bool IsActive { get; set; } = false;
+    private int points = 0;
+    private HandType handType; 
     private Texture2D texture; 
     public Texture2D Texture { get { return texture; } set { texture = value; } }
     private Vector2 position;
@@ -41,42 +43,52 @@ public class PlayCardButton : ISelectable
         switch (HandMatch)
         {
             case "None":
+                handType = HandType.None;
                 text = "No Valid Hand";
                 IsActive = false;
                 break;
             case "Pair":
+                handType = HandType.Pair;
                 text = "Play Pair";
                 IsActive = true;
                 break;
             case "Three of a Kind":
+                handType = HandType.ThreeOfAKind;
                 text = "Play Three of a Kind";
                 IsActive = true;
                 break;
             case "Four of a Kind":
+                handType = HandType.FourOfAKind;
                 text = "Play Four of a Kind";
                 IsActive = true;
                 break;
             case "Two Pair":
+                handType = HandType.TwoPair;
                 text = "Play Two Pair";
                 IsActive = true;
                 break;
             case "Full House":
+                handType = HandType.FullHouse;
                 text = "Play Full House";
                 IsActive = true;
                 break;
             case "Flush":
+                handType = HandType.Flush;
                 text = "Play Flush";
                 IsActive = true;
                 break;
             case "Straight":
+                handType = HandType.Straight;
                 text = "Play Straight";
                 IsActive = true;
                 break;
             case "Straight Flush":
+                handType = HandType.StraightFlush;
                 text = "Play Straight Flush";
                 IsActive = true;
                 break;
             case "Royal Flush":
+                handType = HandType.RoyalFlush;
                 text = "Play Royal Flush";
                 IsActive = true;
                 break;
@@ -85,6 +97,20 @@ public class PlayCardButton : ISelectable
                 IsActive = false;
                 break;
         }
+    }
+
+    public enum HandType
+    {
+        None,
+        Pair,
+        TwoPair,
+        ThreeOfAKind,
+        Straight,
+        Flush,
+        FullHouse,
+        FourOfAKind,
+        StraightFlush,
+        RoyalFlush
     }
     private MouseState previousMS; 
     public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics)
