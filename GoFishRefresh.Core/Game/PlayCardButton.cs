@@ -8,14 +8,17 @@ using System;
 
 public class PlayCardButton : ISelectable
 {
+    private SpriteFont font;
+    private string text; 
     private Texture2D texture; 
     public Texture2D Texture { get { return texture; } set { texture = value; } }
     private Vector2 position;
     public Rectangle Bounds { get; private set; }
     public event EventHandler onClick; 
-    public PlayCardButton(Vector2 position)
+    public PlayCardButton(Vector2 position, string text)
     {
         this.position = position;
+        this.text = text;   
     }
     public void Draw(SpriteBatch spritebatch)
     {
