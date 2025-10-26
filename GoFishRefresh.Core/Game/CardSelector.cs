@@ -29,7 +29,6 @@ public class CardSelector
                     SelectedCard = card.Card;
                     isCardChecked = false; 
                     onCardSelected?.Invoke(this, EventArgs.Empty);
-                    Console.WriteLine($"Selected Card: {SelectedCard.Rank} of {SelectedCard.Suit}");
                 };
                 selectableCards.Add(card);
             }

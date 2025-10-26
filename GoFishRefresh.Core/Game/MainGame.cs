@@ -26,7 +26,7 @@ public class MainGame
         aiHand = new List<AiCard>();
         selectedCards = new List<Card>();
         cardSelector = new CardSelector();
-        playCardButton = new PlayCardButton(new Vector2(1400, 800), "Play Selected Cards");
+        playCardButton = new PlayCardButton(new Vector2(700, 550), "Play Selected Cards");
         Deal(Content);
     }
     
@@ -36,7 +36,6 @@ public class MainGame
         {
             if (aiCard.Card.Rank == card.Rank && aiCard.Card.Suit == card.Suit)
             {
-                Console.WriteLine($"Match found: Player's {card.Rank} matches AI's {aiCard.Card.Rank}");
                 Card newCard = aiCard.Card;
                 aiHand.Remove(aiCard);
                 PlayerCard playerCard = new PlayerCard(newCard, new Vector2(50 + (playerHand.Count) * HandSpacing, 700));
@@ -91,6 +90,7 @@ public class MainGame
     public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
     {
         cardSelector.Update(gameTime, graphics);
+        playCardButton.UpdateSelection(MS, graphics);
         foreach (PlayerCard pCard in playerHand)
         {
             pCard.UpdateSelection(MS, graphics); 
@@ -99,6 +99,7 @@ public class MainGame
     public void LoadContent(ContentManager Content)
     {
         cardSelector.LoadContent(Content);
+        playCardButton.LoadContent(Content);
         foreach (var pCard in playerHand)
         {
             pCard.LoadContent(Content);
@@ -108,6 +109,7 @@ public class MainGame
     public void Draw(SpriteBatch spriteBatch)
     {
         cardSelector.Draw(spriteBatch);
+        playCardButton.Draw(spriteBatch);
         spriteBatch.DrawString(Fonts.MainFont, "Selected Hand Type: " + handMatch, new Vector2(50, 600), Color.Black, 0f, Vector2.Zero, 2f, SpriteEffects.None, Global.HandsLayerDepth);
         foreach (var pCard in playerHand)
         {

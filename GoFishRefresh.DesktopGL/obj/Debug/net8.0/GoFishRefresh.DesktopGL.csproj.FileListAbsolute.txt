@@ -92,3 +92,4 @@ C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\bin\Debu
 C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\bin\Debug\net8.0\Content\pixel.xnb
 C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\bin\Debug\net8.0\Content\background.xnb
 C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\bin\Debug\net8.0\Content\card_selected.xnb
+C:\Users\joshs\Documents\projects\GoFishRefresh\GoFishRefresh.DesktopGL\bin\Debug\net8.0\Content\button_background.xnb

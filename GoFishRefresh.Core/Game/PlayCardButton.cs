@@ -8,7 +8,6 @@ using System;
 
 public class PlayCardButton : ISelectable
 {
-    private SpriteFont font;
     private string text;
     public bool IsActive { get; set; } = false;
     private int points = 0;
@@ -25,7 +24,11 @@ public class PlayCardButton : ISelectable
     }
     public void Draw(SpriteBatch spritebatch)
     {
-        spritebatch.Draw(texture, position, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.ShowCardButtonLayerDepth);
+        if (IsActive)
+        {
+            spritebatch.Draw(texture, position, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.ShowCardButtonLayerDepth);
+            spritebatch.DrawString(Fonts.MainFont, text, new Vector2(position.X + 10, position.Y + 10), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.ShowCardButtonLayerDepth + 0.01f);
+        }
     }
     public bool IsSelected { get; set; } = false;
     public bool IsHighlighted { get; set; } = false;
@@ -38,11 +41,17 @@ public class PlayCardButton : ISelectable
         IsSelected = true;
     }
 
+    public void LoadContent(ContentManager Content)
+    {
+        texture = Content.Load<Texture2D>("button_background");
+    }
+
     public void SetActive(string HandMatch)
     {
+        Console.WriteLine(HandMatch); 
         switch (HandMatch)
         {
-            case "None":
+            case "No Match":
                 handType = HandType.None;
                 text = "No Valid Hand";
                 IsActive = false;
@@ -91,10 +100,6 @@ public class PlayCardButton : ISelectable
                 handType = HandType.RoyalFlush;
                 text = "Play Royal Flush";
                 IsActive = true;
-                break;
-            default:
-                text = "";
-                IsActive = false;
                 break;
         }
     }
