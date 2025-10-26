@@ -49,7 +49,6 @@ public class PlayCardButton : ISelectable
 
     public void SetActive(string HandMatch)
     {
-        Console.WriteLine(HandMatch); 
         switch (HandMatch)
         {
             case "No Match":

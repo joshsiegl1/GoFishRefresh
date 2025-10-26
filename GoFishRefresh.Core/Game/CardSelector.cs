@@ -39,7 +39,6 @@ public class CardSelector
     {
         if (!isCardChecked && SelectedCard != null)
         {
-            Console.WriteLine($"Card {SelectedCard.Rank} of {SelectedCard.Suit} has been checked against AI Hand");
             isCardChecked = true; 
         }
     }
