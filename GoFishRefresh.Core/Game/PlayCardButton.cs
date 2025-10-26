@@ -24,6 +24,7 @@ public class PlayCardButton : ISelectable
     }
     public void Draw(SpriteBatch spritebatch)
     {
+        // Can be many seperate buttons here for different hand types
         if (IsActive)
         {
             spritebatch.Draw(texture, position, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.ShowCardButtonLayerDepth);

@@ -26,7 +26,31 @@ public class MainGame
         aiHand = new List<AiCard>();
         selectedCards = new List<Card>();
         cardSelector = new CardSelector();
-        playCardButton = new PlayCardButton(new Vector2(700, 550), "Play Selected Cards");
+        playCardButton = new PlayCardButton(new Vector2(50, 600), "Play Selected Cards");
+        playCardButton.onClick += (s, e) =>
+        {
+            //Very incomplete method of removing cards, adding to the score, and updating the played cards screen
+            Console.WriteLine($"Player played a {handMatch} with {selectedCards.Count} cards.");
+            Console.WriteLine("Cards played:");
+            foreach (var card in selectedCards)
+            {
+                Console.WriteLine($"- {card.Rank} of {card.Suit}");
+            }
+            foreach (var card in selectedCards)
+            {
+                foreach (var pCard in playerHand)
+                {
+                    if (pCard.Card.Rank == card.Rank && pCard.Card.Suit == card.Suit)
+                    {
+                        playerHand.Remove(pCard);
+                        break;
+                    }
+                }
+            }
+            selectedCards.Clear();
+            handMatch = "";
+            playCardButton.SetActive("No Match");
+        };
         Deal(Content);
     }
     
@@ -110,7 +134,7 @@ public class MainGame
     {
         cardSelector.Draw(spriteBatch);
         playCardButton.Draw(spriteBatch);
-        spriteBatch.DrawString(Fonts.MainFont, "Selected Hand Type: " + handMatch, new Vector2(50, 600), Color.Black, 0f, Vector2.Zero, 2f, SpriteEffects.None, Global.HandsLayerDepth);
+        //spriteBatch.DrawString(Fonts.MainFont, "Selected Hand Type: " + handMatch, new Vector2(50, 600), Color.Black, 0f, Vector2.Zero, 2f, SpriteEffects.None, Global.HandsLayerDepth);
         foreach (var pCard in playerHand)
         {
             pCard.Draw(spriteBatch);
