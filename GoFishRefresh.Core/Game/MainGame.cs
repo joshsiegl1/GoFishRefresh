@@ -47,11 +47,20 @@ public class MainGame
                     }
                 }
             }
+            ReGroupCards();
             selectedCards.Clear();
             handMatch = "";
             playCardButton.SetActive("No Match");
         };
         Deal(Content);
+    }
+
+    private void ReGroupCards()
+    {
+        for (int i = 0; i < playerHand.Count; i++)
+        {
+            playerHand[i].Position = new Vector2(50 + i * HandSpacing, 700);
+        }
     }
     
     private void CheckSelection(Card card, ContentManager Content)
