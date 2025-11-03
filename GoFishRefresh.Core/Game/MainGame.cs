@@ -12,6 +12,7 @@ public class MainGame
     private List<PlayerCard> playerHand;
     private List<AiCard> aiHand;
     private List<Card> selectedCards;
+    private List<Card> playedCards; 
     private const int HandSize = 7;
     private const int HandSpacing = 180;
     private CardSelector cardSelector;
@@ -35,9 +36,7 @@ public class MainGame
             foreach (var card in selectedCards)
             {
                 Console.WriteLine($"- {card.Rank} of {card.Suit}");
-            }
-            foreach (var card in selectedCards)
-            {
+                playedCards.Add(card);
                 foreach (var pCard in playerHand)
                 {
                     if (pCard.Card.Rank == card.Rank && pCard.Card.Suit == card.Suit)
@@ -61,6 +60,10 @@ public class MainGame
         {
             playerHand[i].Position = new Vector2(50 + i * HandSpacing, 700);
         }
+        for (int i = 0; i < aiHand.Count; i++)
+        {
+            aiHand[i].Position = new Vector2(50 + i * HandSpacing, 50);
+        }
     }
     
     private void CheckSelection(Card card, ContentManager Content)
@@ -71,6 +74,7 @@ public class MainGame
             {
                 Card newCard = aiCard.Card;
                 aiHand.Remove(aiCard);
+                ReGroupCards(); 
                 PlayerCard playerCard = new PlayerCard(newCard, new Vector2(50 + (playerHand.Count) * HandSpacing, 700));
                 playerCard.onSelect += (s, e) =>
                 {
