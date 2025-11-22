@@ -74,6 +74,8 @@ public class PlayedCards
         Vector2 startPosition = new Vector2(50, 200);
         const float verticalSpacing = 200;
         const float rowWidth = 1920 - 100; // Screen width minus margins
+        const float screenHeight = 1080; // Virtual screen height
+        const float maxY = screenHeight - 100; // Stop drawing before bottom margin
 
         Vector2 currentPosition = startPosition;
         int handsInCurrentRow = 0;
@@ -91,6 +93,12 @@ public class PlayedCards
                 currentPosition.X = startPosition.X;
                 currentPosition.Y += verticalSpacing;
                 handsInCurrentRow = 0;
+            }
+
+            // Check if the current position exceeds the screen height - stop drawing if it does
+            if (currentPosition.Y > maxY)
+            {
+                break; // Stop drawing when we exceed the visible area
             }
 
             // Draw the hand
