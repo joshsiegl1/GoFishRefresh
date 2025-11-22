@@ -88,7 +88,17 @@ namespace GoFishRefresh.Core
             Textures.LoadContent(Content);
             Fonts.LoadFonts(Content); 
             mainGame.LoadContent(Content); 
-            mainUI.LoadContent(Content);    
+            mainUI.LoadContent(Content);
+            
+            // Connect MainGame's onHandPlayed event to MainUI's PlayedCards
+            mainGame.onHandPlayed += (s, e) =>
+            {
+                if (e != null && e.PlayedCards != null && e.PlayedCards.Count > 0)
+                {
+                    mainUI.GetPlayedCards().AddNewHandPlayed(e.PlayedCards, e.HandType);
+                }
+            };
+            
             base.LoadContent();
         }
         /// <summary>

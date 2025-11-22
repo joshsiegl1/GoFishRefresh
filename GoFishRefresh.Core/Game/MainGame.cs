@@ -23,7 +23,20 @@ public class MainGame
     private PlayCardButton playCardButton;
     private MouseState MS;
     private HandMatcher.HandType currentHandType = HandMatcher.HandType.None;
-    public event EventHandler onHandPlayed; 
+    public event EventHandler<HandPlayedEventArgs> onHandPlayed;
+    
+    // Event args for when a hand is played
+    public class HandPlayedEventArgs : EventArgs
+    {
+        public List<Card> PlayedCards { get; }
+        public HandMatcher.HandType HandType { get; }
+        
+        public HandPlayedEventArgs(List<Card> playedCards, HandMatcher.HandType handType)
+        {
+            PlayedCards = new List<Card>(playedCards); // Create a copy
+            HandType = handType;
+        }
+    } 
     public MainGame(ContentManager Content)
     {
         deck = new Deck();
@@ -58,7 +71,8 @@ public class MainGame
             Console.WriteLine($"- {card.Rank} of {card.Suit}");
         }
 
-        onHandPlayed?.Invoke(this, EventArgs.Empty);
+        // Invoke event with the played cards
+        onHandPlayed?.Invoke(this, new HandPlayedEventArgs(cardsToPlay, currentHandType));
         ReGroupCards();
         selectedCards.Clear();
         currentHandType = HandMatcher.HandType.None;

@@ -16,7 +16,10 @@ namespace GoFishRefresh.Core.UI
         Button btnShowPlayedCards;
         bool showPlayedHands = false; 
         PlayedCards playedCards; 
-        float Fade = 0f; 
+        float Fade = 0f;
+        float PlayedCardsFade = 0f;
+        private const float FadeSpeed = 0.05f;
+        
         public MainUI()
         {
             btnShowHands = new Button(new Vector2(50, 50));
@@ -40,27 +43,65 @@ namespace GoFishRefresh.Core.UI
 
         public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
         {
+            MS = Mouse.GetState();
             btnShowHands.UpdateSelection(MS, graphics);
+            btnShowPlayedCards.UpdateSelection(MS, graphics);
+            
+            // Update fade for hands screen
             if (showHands && Fade < 1f)
             {
-                Fade += 0.05f;
+                Fade += FadeSpeed;
             }
             else if (!showHands && Fade > 0f)
             {
-                Fade -= 0.05f;
+                Fade -= FadeSpeed;
             }
-
+            
+            // Update fade for played cards screen
+            if (showPlayedHands && PlayedCardsFade < 1f)
+            {
+                PlayedCardsFade += FadeSpeed;
+            }
+            else if (!showPlayedHands && PlayedCardsFade > 0f)
+            {
+                PlayedCardsFade -= FadeSpeed;
+            }
         }
+        
         public void LoadContent(ContentManager Content)
         {
             btnShowHands.Texture = Textures.ShowHandsButton;
+            btnShowPlayedCards.Texture = Textures.ButtonBackground;
         }
+        
         public void Draw(SpriteBatch spriteBatch)
         {
             btnShowHands.Draw(spriteBatch);
-            spriteBatch.Draw(Textures.background, new Rectangle(0, 0, 1920, 1080), null, Color.Black * 0.5f * Fade, 0f,
-                Vector2.Zero, SpriteEffects.None, Global.BackgroundLayerDepth);
-            hands.Draw(spriteBatch, Fade);
+            btnShowPlayedCards.Draw(spriteBatch);
+            
+            // Draw hands screen
+            if (Fade > 0f)
+            {
+                spriteBatch.Draw(Textures.background, new Rectangle(0, 0, 1920, 1080), null, Color.Black * 0.5f * Fade, 0f,
+                    Vector2.Zero, SpriteEffects.None, Global.BackgroundLayerDepth);
+                hands.Draw(spriteBatch, Fade);
+            }
+            
+            // Draw played cards screen
+            if (PlayedCardsFade > 0f)
+            {
+                spriteBatch.Draw(Textures.background, new Rectangle(0, 0, 1920, 1080), null, Color.Black * 0.5f * PlayedCardsFade, 0f,
+                    Vector2.Zero, SpriteEffects.None, Global.BackgroundLayerDepth);
+                playedCards.Draw(spriteBatch, PlayedCardsFade);
+            }
+        }
+        
+        /// <summary>
+        /// Get the PlayedCards instance to connect to MainGame events
+        /// </summary>
+        public PlayedCards GetPlayedCards()
+        {
+            return playedCards;
         }
     }    
 }
