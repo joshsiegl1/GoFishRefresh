@@ -10,8 +10,7 @@ public class PlayCardButton : ISelectable
 {
     private string text;
     public bool IsActive { get; set; } = false;
-    private int points = 0;
-    private HandType handType; 
+    private HandMatcher.HandType handType; 
     private Texture2D texture; 
     public Texture2D Texture { get { return texture; } set { texture = value; } }
     private Vector2 position;
@@ -47,75 +46,58 @@ public class PlayCardButton : ISelectable
         texture = Content.Load<Texture2D>("button_background");
     }
 
-    public void SetActive(string HandMatch)
+    // Improved: Use enum instead of string for type safety
+    public void SetActive(HandMatcher.HandType handType)
     {
-        switch (HandMatch)
+        this.handType = handType;
+        
+        switch (handType)
         {
-            case "No Match":
-                handType = HandType.None;
+            case HandMatcher.HandType.None:
                 text = "No Valid Hand";
                 IsActive = false;
                 break;
-            case "Pair":
-                handType = HandType.Pair;
+            case HandMatcher.HandType.Pair:
                 text = "Play Pair";
                 IsActive = true;
                 break;
-            case "Three of a Kind":
-                handType = HandType.ThreeOfAKind;
+            case HandMatcher.HandType.ThreeOfAKind:
                 text = "Play Three of a Kind";
                 IsActive = true;
                 break;
-            case "Four of a Kind":
-                handType = HandType.FourOfAKind;
+            case HandMatcher.HandType.FourOfAKind:
                 text = "Play Four of a Kind";
                 IsActive = true;
                 break;
-            case "Two Pair":
-                handType = HandType.TwoPair;
+            case HandMatcher.HandType.TwoPair:
                 text = "Play Two Pair";
                 IsActive = true;
                 break;
-            case "Full House":
-                handType = HandType.FullHouse;
+            case HandMatcher.HandType.FullHouse:
                 text = "Play Full House";
                 IsActive = true;
                 break;
-            case "Flush":
-                handType = HandType.Flush;
+            case HandMatcher.HandType.Flush:
                 text = "Play Flush";
                 IsActive = true;
                 break;
-            case "Straight":
-                handType = HandType.Straight;
+            case HandMatcher.HandType.Straight:
                 text = "Play Straight";
                 IsActive = true;
                 break;
-            case "Straight Flush":
-                handType = HandType.StraightFlush;
+            case HandMatcher.HandType.StraightFlush:
                 text = "Play Straight Flush";
                 IsActive = true;
                 break;
-            case "Royal Flush":
-                handType = HandType.RoyalFlush;
+            case HandMatcher.HandType.RoyalFlush:
                 text = "Play Royal Flush";
                 IsActive = true;
                 break;
+            default:
+                text = "No Valid Hand";
+                IsActive = false;
+                break;
         }
-    }
-
-    public enum HandType
-    {
-        None,
-        Pair,
-        TwoPair,
-        ThreeOfAKind,
-        Straight,
-        Flush,
-        FullHouse,
-        FourOfAKind,
-        StraightFlush,
-        RoyalFlush
     }
     private MouseState previousMS; 
     public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics)

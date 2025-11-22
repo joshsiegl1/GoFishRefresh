@@ -1,10 +1,11 @@
-#region Using Statments
+#region Using Statements
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Linq;
 #endregion
 public class MainGame
 {
@@ -15,10 +16,15 @@ public class MainGame
     private List<Card> playedCards; 
     private const int HandSize = 7;
     private const int HandSpacing = 180;
+    private const int PlayerHandY = 700;
+    private const int AiHandY = 50;
+    private const int HandStartX = 50;
+    private const int PlayButtonY = 600;
     private CardSelector cardSelector;
     private PlayCardButton playCardButton;
     private MouseState MS;
-    string handMatch = "";
+    private HandMatcher.HandType currentHandType = HandMatcher.HandType.None;
+    public event EventHandler onHandPlayed; 
     public MainGame(ContentManager Content)
     {
         deck = new Deck();
@@ -26,73 +32,84 @@ public class MainGame
         playerHand = new List<PlayerCard>();
         aiHand = new List<AiCard>();
         selectedCards = new List<Card>();
+        playedCards = new List<Card>(); // Fixed: Initialize playedCards
         cardSelector = new CardSelector();
-        playCardButton = new PlayCardButton(new Vector2(50, 600), "Play Selected Cards");
-        playCardButton.onClick += (s, e) =>
-        {
-            //Very incomplete method of removing cards, adding to the score, and updating the played cards screen
-            Console.WriteLine($"Player played a {handMatch} with {selectedCards.Count} cards.");
-            Console.WriteLine("Cards played:");
-            foreach (var card in selectedCards)
-            {
-                Console.WriteLine($"- {card.Rank} of {card.Suit}");
-                playedCards.Add(card);
-                foreach (var pCard in playerHand)
-                {
-                    if (pCard.Card.Rank == card.Rank && pCard.Card.Suit == card.Suit)
-                    {
-                        playerHand.Remove(pCard);
-                        break;
-                    }
-                }
-            }
-            ReGroupCards();
-            selectedCards.Clear();
-            handMatch = "";
-            playCardButton.SetActive("No Match");
-        };
+        playCardButton = new PlayCardButton(new Vector2(HandStartX, PlayButtonY), "Play Selected Cards");
+        playCardButton.onClick += OnPlayCardButtonClicked;
         Deal(Content);
+    }
+
+    private void OnPlayCardButtonClicked(object sender, EventArgs e)
+    {
+        if (selectedCards.Count == 0 || currentHandType == HandMatcher.HandType.None)
+            return;
+
+        // Create a copy of selected cards for the played cards list
+        var cardsToPlay = new List<Card>(selectedCards);
+        playedCards.AddRange(cardsToPlay);
+
+        // Efficiently remove cards from player hand using LINQ
+        var cardsToRemove = new HashSet<Card>(selectedCards, new CardEqualityComparer());
+        playerHand.RemoveAll(pCard => cardsToRemove.Contains(pCard.Card));
+
+        Console.WriteLine($"Player played a {HandMatcher.ToString(currentHandType)} with {selectedCards.Count} cards.");
+        Console.WriteLine("Cards played:");
+        foreach (var card in selectedCards)
+        {
+            Console.WriteLine($"- {card.Rank} of {card.Suit}");
+        }
+
+        onHandPlayed?.Invoke(this, EventArgs.Empty);
+        ReGroupCards();
+        selectedCards.Clear();
+        currentHandType = HandMatcher.HandType.None;
+        playCardButton.SetActive(HandMatcher.HandType.None);
+    }
+
+    // Helper class for card comparison
+    private class CardEqualityComparer : IEqualityComparer<Card>
+    {
+        public bool Equals(Card x, Card y)
+        {
+            if (x == null || y == null) return false;
+            return x.Rank == y.Rank && x.Suit == y.Suit;
+        }
+
+        public int GetHashCode(Card obj)
+        {
+            return HashCode.Combine(obj.Rank, obj.Suit);
+        }
     }
 
     private void ReGroupCards()
     {
         for (int i = 0; i < playerHand.Count; i++)
         {
-            playerHand[i].Position = new Vector2(50 + i * HandSpacing, 700);
+            playerHand[i].Position = new Vector2(HandStartX + i * HandSpacing, PlayerHandY);
         }
         for (int i = 0; i < aiHand.Count; i++)
         {
-            aiHand[i].Position = new Vector2(50 + i * HandSpacing, 50);
+            aiHand[i].Position = new Vector2(HandStartX + i * HandSpacing, AiHandY);
         }
     }
     
     private void CheckSelection(Card card, ContentManager Content)
     {
-        foreach (var aiCard in aiHand)
+        // Use FindIndex for better performance and safety
+        int aiCardIndex = aiHand.FindIndex(aiCard => 
+            aiCard.Card.Rank == card.Rank && aiCard.Card.Suit == card.Suit);
+        
+        if (aiCardIndex >= 0)
         {
-            if (aiCard.Card.Rank == card.Rank && aiCard.Card.Suit == card.Suit)
-            {
-                Card newCard = aiCard.Card;
-                aiHand.Remove(aiCard);
-                ReGroupCards(); 
-                PlayerCard playerCard = new PlayerCard(newCard, new Vector2(50 + (playerHand.Count) * HandSpacing, 700));
-                playerCard.onSelect += (s, e) =>
-                {
-                    selectedCards.Add(playerCard.Card);
-                    handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
-                    playCardButton.SetActive(handMatch); 
-                };
-                playerCard.onDeselect += (s, e) =>
-                {
-                    selectedCards.Remove(playerCard.Card);
-                    handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
-                    playCardButton.SetActive(handMatch); 
-                };
-                // Load content for the new player card
-                playerCard.LoadContent(Content); 
-                playerHand.Add(playerCard);
-                return;
-            }
+            Card newCard = aiHand[aiCardIndex].Card;
+            aiHand.RemoveAt(aiCardIndex);
+            ReGroupCards(); 
+            
+            PlayerCard playerCard = new PlayerCard(newCard, 
+                new Vector2(HandStartX + playerHand.Count * HandSpacing, PlayerHandY));
+            AttachCardEventHandlers(playerCard);
+            playerCard.LoadContent(Content); 
+            playerHand.Add(playerCard);
         }
     }
     // I'm using composition here rather than inheritance for PlayerCard and AiCard
@@ -106,26 +123,42 @@ public class MainGame
         for (int i = 0; i < HandSize; i++)
         {
             Card playerCard = deck.DrawCard();
-            PlayerCard pCard = new PlayerCard(playerCard, new Vector2(50 + i * HandSpacing, 700));
-            pCard.onSelect += (s, e) => {
-                selectedCards.Add(pCard.Card);
-                handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
-                playCardButton.SetActive(handMatch);
-            };
-            pCard.onDeselect += (s, e) => {
-                selectedCards.Remove(pCard.Card);
-                handMatch = HandMatcher.ToString(HandMatcher.IsMatch(selectedCards));
-                playCardButton.SetActive(handMatch);
-            };
+            PlayerCard pCard = new PlayerCard(playerCard, 
+                new Vector2(HandStartX + i * HandSpacing, PlayerHandY));
+            AttachCardEventHandlers(pCard);
             playerHand.Add(pCard);
+            
             Card aiCard = deck.DrawCard();
-            AiCard aCard = new AiCard(aiCard, new Vector2(50 + i * HandSpacing, 50));
+            AiCard aCard = new AiCard(aiCard, 
+                new Vector2(HandStartX + i * HandSpacing, AiHandY));
             aiHand.Add(aCard);
         }
     }
 
+    // Refactored: Extract duplicate event handler code into reusable method
+    private void AttachCardEventHandlers(PlayerCard playerCard)
+    {
+        playerCard.onSelect += (s, e) =>
+        {
+            selectedCards.Add(playerCard.Card);
+            UpdateHandMatch();
+        };
+        playerCard.onDeselect += (s, e) =>
+        {
+            selectedCards.Remove(playerCard.Card);
+            UpdateHandMatch();
+        };
+    }
+
+    private void UpdateHandMatch()
+    {
+        currentHandType = HandMatcher.IsMatch(selectedCards);
+        playCardButton.SetActive(currentHandType);
+    }
+
     public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
     {
+        MS = Mouse.GetState(); // Fixed: Update mouse state
         cardSelector.Update(gameTime, graphics);
         playCardButton.UpdateSelection(MS, graphics);
         foreach (PlayerCard pCard in playerHand)
