@@ -1,6 +1,7 @@
 #region Using Statements
 using Microsoft.Xna.Framework;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using System.Linq;
 #endregion
 
 public class HandMatcher
@@ -41,75 +42,68 @@ public class HandMatcher
 
         if (hand.Count == 5)
         {
-            int SpadeCount, HeartCount, ClubCount, DiamondCount;
-            SpadeCount = HeartCount = ClubCount = DiamondCount = 0;
-            int TwoCount, ThreeCount, FourCount, FiveCount, SixCount, SevenCount, EightCount, NineCount, TenCount, JackCount, QueenCount, KingCount, AceCount;
-            TwoCount = ThreeCount = FourCount = FiveCount = SixCount = SevenCount = EightCount = NineCount = TenCount = JackCount = QueenCount = KingCount = AceCount = 0;
-
-            for (int i = 0; i < hand.Count; i++)
-            {
-                if (hand[i].Suit == Card.Suits.Spades) SpadeCount++;
-                if (hand[i].Suit == Card.Suits.Hearts) HeartCount++;
-                if (hand[i].Suit == Card.Suits.Clubs) ClubCount++;
-                if (hand[i].Suit == Card.Suits.Diamonds) DiamondCount++;
-
-                if (hand[i].Rank == Card.Ranks.Two) TwoCount++;
-                if (hand[i].Rank == Card.Ranks.Three) ThreeCount++;
-                if (hand[i].Rank == Card.Ranks.Four) FourCount++;
-                if (hand[i].Rank == Card.Ranks.Five) FiveCount++;
-                if (hand[i].Rank == Card.Ranks.Six) SixCount++;
-                if (hand[i].Rank == Card.Ranks.Seven) SevenCount++;
-                if (hand[i].Rank == Card.Ranks.Eight) EightCount++;
-                if (hand[i].Rank == Card.Ranks.Nine) NineCount++;
-                if (hand[i].Rank == Card.Ranks.Ten) TenCount++;
-                if (hand[i].Rank == Card.Ranks.Jack) JackCount++;
-                if (hand[i].Rank == Card.Ranks.Queen) QueenCount++;
-                if (hand[i].Rank == Card.Ranks.King) KingCount++;
-                if (hand[i].Rank == Card.Ranks.Ace) AceCount++;
-
-                //This probably works
-                if (TwoCount == 2 || ThreeCount == 2 || FourCount == 2 || FiveCount == 2 || SixCount == 2 ||
-                    SevenCount == 2 || EightCount == 2 || NineCount == 2 || TenCount == 2 || JackCount == 2 ||
-                    QueenCount == 2 || KingCount == 2 || AceCount == 2)
-                {
-                    if (TwoCount == 3 || ThreeCount == 3 || FourCount == 3 || FiveCount == 3 || SixCount == 3 ||
-                        SevenCount == 3 || EightCount == 3 || NineCount == 3 || TenCount == 3 || JackCount == 3 ||
-                        QueenCount == 3 || KingCount == 3 || AceCount == 3)
-                        return HandType.FullHouse;
-                }
-
-                if (TenCount > 0 && JackCount > 0 && QueenCount > 0 && KingCount > 0 && AceCount > 0)
-                {
-                    if (SpadeCount == 5 || HeartCount == 5 || ClubCount == 5 || DiamondCount == 5)
-                        return HandType.RoyalFlush;
-                }
-
-                if ((TwoCount > 0 && ThreeCount > 0 && FourCount > 0 && FiveCount > 0 && SixCount > 0) ||
-                    (ThreeCount > 0 && FourCount > 0 && FiveCount > 0 && SixCount > 0 && SevenCount > 0) ||
-                    (FourCount > 0 && FiveCount > 0 && SixCount > 0 && SevenCount > 0 && EightCount > 0) ||
-                    (FiveCount > 0 && SixCount > 0 && SevenCount > 0 && EightCount > 0 && NineCount > 0) ||
-                    (SixCount > 0 && SevenCount > 0 && EightCount > 0 && NineCount > 0 && TenCount > 0) ||
-                    (SevenCount > 0 && EightCount > 0 && NineCount > 0 && TenCount > 0 && JackCount > 0) ||
-                    (EightCount > 0 && NineCount > 0 && TenCount > 0 && JackCount > 0 && QueenCount > 0) ||
-                    (NineCount > 0 && TenCount > 0 && JackCount > 0 && QueenCount > 0 && KingCount > 0) ||
-                    (TenCount > 0 && JackCount > 0 && QueenCount > 0 && KingCount > 0 && AceCount > 0))
-                {
-                    if (SpadeCount == 5 || HeartCount == 5 || ClubCount == 5 || DiamondCount == 5)
-                        return HandType.StraightFlush;
-                    else
-                        return HandType.Straight;
-                }
-
-                if (SpadeCount == 5 || HeartCount == 5 || ClubCount == 5 || DiamondCount == 5)
-                {
-                    return HandType.Flush;
-                }
-            }
-
+            // Improved: Use LINQ GroupBy instead of verbose individual counters
+            var suitGroups = hand.GroupBy(c => c.Suit).ToList();
+            var rankGroups = hand.GroupBy(c => c.Rank).ToList();
+            
+            bool isFlush = suitGroups.Any(g => g.Count() == 5);
+            var rankCounts = rankGroups.Select(g => g.Count()).OrderByDescending(c => c).ToList();
+            
+            // Check for Royal Flush (A, K, Q, J, 10 of same suit)
+            var ranks = hand.Select(c => (int)c.Rank).ToList();
+            bool isRoyalFlush = isFlush && 
+                ranks.Contains((int)Card.Ranks.Ten) &&
+                ranks.Contains((int)Card.Ranks.Jack) &&
+                ranks.Contains((int)Card.Ranks.Queen) &&
+                ranks.Contains((int)Card.Ranks.King) &&
+                ranks.Contains((int)Card.Ranks.Ace);
+            
+            if (isRoyalFlush)
+                return HandType.RoyalFlush;
+            
+            // Check for Straight Flush or Straight
+            bool isStraight = IsStraight(ranks);
+            if (isStraight && isFlush)
+                return HandType.StraightFlush;
+            if (isStraight)
+                return HandType.Straight;
+            
+            // Check for Flush
+            if (isFlush)
+                return HandType.Flush;
+            
+            // Check for Full House (3 of a kind + pair)
+            if (rankCounts.Count >= 2 && rankCounts[0] == 3 && rankCounts[1] == 2)
+                return HandType.FullHouse;
         }
 
 
         return HandType.None;
+    }
+    
+    // Improved: Helper method to check for straights
+    private static bool IsStraight(List<int> ranks)
+    {
+        if (ranks.Count != 5) return false;
+        
+        // Handle Ace-low straight (A, 2, 3, 4, 5)
+        if (ranks.Contains((int)Card.Ranks.Ace) && 
+            ranks.Contains((int)Card.Ranks.Two) &&
+            ranks.Contains((int)Card.Ranks.Three) &&
+            ranks.Contains((int)Card.Ranks.Four) &&
+            ranks.Contains((int)Card.Ranks.Five))
+        {
+            return true;
+        }
+        
+        // Check for regular straights
+        ranks = ranks.OrderBy(r => r).ToList();
+        for (int i = 1; i < ranks.Count; i++)
+        {
+            if (ranks[i] != ranks[i - 1] + 1)
+                return false;
+        }
+        return true;
     }
     
     public static string ToString(HandType handType)

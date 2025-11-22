@@ -32,33 +32,14 @@ public class PlayerCard : ISelectable
     }
     public void LoadContent(ContentManager Content)
     {
-        string rankString = card.Rank switch
-        {
-            Card.Ranks.Ace => "A",
-            Card.Ranks.Two => "2",
-            Card.Ranks.Three => "3",
-            Card.Ranks.Four => "4",
-            Card.Ranks.Five => "5",
-            Card.Ranks.Six => "6",
-            Card.Ranks.Seven => "7",
-            Card.Ranks.Eight => "8",
-            Card.Ranks.Nine => "9",
-            Card.Ranks.Ten => "10",
-            Card.Ranks.Jack => "J",
-            Card.Ranks.Queen => "Q",
-            Card.Ranks.King => "K",
-            _ => throw new ArgumentOutOfRangeException()
-        };
-        string suitString = card.Suit switch
-        {
-            Card.Suits.Hearts => "H",
-            Card.Suits.Diamonds => "D",
-            Card.Suits.Clubs => "C",
-            Card.Suits.Spades => "S",
-            _ => throw new ArgumentOutOfRangeException()
-        };
-        string textureName = $"{rankString}{suitString}";
-        texture = Content.Load<Texture2D>($"{textureName}");
+        // Improved: Use Card.LoadString() instead of duplicating conversion logic
+        if (Content == null)
+            throw new ArgumentNullException(nameof(Content));
+        if (card == null)
+            throw new InvalidOperationException("Card is null");
+            
+        string textureName = card.LoadString();
+        texture = Content.Load<Texture2D>(textureName);
     }
     public void Select()
     {

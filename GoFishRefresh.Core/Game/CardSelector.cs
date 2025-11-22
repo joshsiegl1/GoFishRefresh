@@ -13,7 +13,6 @@ public class CardSelector
     private List<SelectableCard> selectableCards;
     private Vector2 position;
     public Card SelectedCard = null;
-    bool isCardChecked = false; 
     public event EventHandler onCardSelected;
     public CardSelector()
     {
@@ -27,7 +26,6 @@ public class CardSelector
                 card.onSelect += (s, e) =>
                 {
                     SelectedCard = card.Card;
-                    isCardChecked = false; 
                     onCardSelected?.Invoke(this, EventArgs.Empty);
                 };
                 selectableCards.Add(card);
@@ -35,39 +33,28 @@ public class CardSelector
         }
     }
     
-    public void CheckSelection()
-    {
-        if (!isCardChecked && SelectedCard != null)
-        {
-            isCardChecked = true; 
-        }
-    }
-
     public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
     {
+        if (selectableCards == null || selectableCards.Count == 0)
+            return;
+            
         MS = Mouse.GetState();
 
         int scrollDelta = MS.ScrollWheelValue - previousMS.ScrollWheelValue;
         if (scrollDelta < 0)
         {
-            if (drawIndex <= 0)
-            {
-                drawIndex = Deck.LIMIT - 1;
-            }
-            else drawIndex--;
+            drawIndex = (drawIndex <= 0) ? selectableCards.Count - 1 : drawIndex - 1;
         }
-        if (scrollDelta > 0)
+        else if (scrollDelta > 0)
         {
-            if (drawIndex >= Deck.LIMIT - 1)
-            {
-                drawIndex = 0;
-            }
-            else drawIndex++;
+            drawIndex = (drawIndex >= selectableCards.Count - 1) ? 0 : drawIndex + 1;
         }
 
-        selectableCards[drawIndex].UpdateSelection(MS, graphics);
-
-        CheckSelection();
+        // Improved: Add bounds checking to prevent index out of range
+        if (drawIndex >= 0 && drawIndex < selectableCards.Count)
+        {
+            selectableCards[drawIndex].UpdateSelection(MS, graphics);
+        }
 
         previousMS = MS;
     }

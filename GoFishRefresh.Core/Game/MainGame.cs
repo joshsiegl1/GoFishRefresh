@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Linq;
 #endregion
 public class MainGame
 {
@@ -48,8 +47,8 @@ public class MainGame
         var cardsToPlay = new List<Card>(selectedCards);
         playedCards.AddRange(cardsToPlay);
 
-        // Efficiently remove cards from player hand using LINQ
-        var cardsToRemove = new HashSet<Card>(selectedCards, new CardEqualityComparer());
+        // Efficiently remove cards from player hand using HashSet
+        var cardsToRemove = new HashSet<Card>(selectedCards, CardEqualityComparer.Instance);
         playerHand.RemoveAll(pCard => cardsToRemove.Contains(pCard.Card));
 
         Console.WriteLine($"Player played a {HandMatcher.ToString(currentHandType)} with {selectedCards.Count} cards.");
@@ -66,17 +65,21 @@ public class MainGame
         playCardButton.SetActive(HandMatcher.HandType.None);
     }
 
-    // Helper class for card comparison
+    // Improved: Made static for better performance (no instance allocation needed)
     private class CardEqualityComparer : IEqualityComparer<Card>
     {
+        public static readonly CardEqualityComparer Instance = new CardEqualityComparer();
+        
         public bool Equals(Card x, Card y)
         {
+            if (ReferenceEquals(x, y)) return true;
             if (x == null || y == null) return false;
             return x.Rank == y.Rank && x.Suit == y.Suit;
         }
 
         public int GetHashCode(Card obj)
         {
+            if (obj == null) return 0;
             return HashCode.Combine(obj.Rank, obj.Suit);
         }
     }
@@ -95,9 +98,14 @@ public class MainGame
     
     private void CheckSelection(Card card, ContentManager Content)
     {
+        if (card == null || Content == null)
+            return;
+            
         // Use FindIndex for better performance and safety
         int aiCardIndex = aiHand.FindIndex(aiCard => 
-            aiCard.Card.Rank == card.Rank && aiCard.Card.Suit == card.Suit);
+            aiCard?.Card != null && 
+            aiCard.Card.Rank == card.Rank && 
+            aiCard.Card.Suit == card.Suit);
         
         if (aiCardIndex >= 0)
         {
@@ -115,11 +123,27 @@ public class MainGame
     // I'm using composition here rather than inheritance for PlayerCard and AiCard
     private void Deal(ContentManager Content)
     {
+        if (Content == null)
+            throw new ArgumentNullException(nameof(Content));
+        if (deck == null)
+            throw new InvalidOperationException("Deck is not initialized");
+            
         cardSelector.onCardSelected += (s, e) =>
         {
             Card selected = cardSelector.SelectedCard;
-            CheckSelection(selected, Content);
+            if (selected != null)
+            {
+                CheckSelection(selected, Content);
+            }
         };
+        
+        // Improved: Add validation for deck size
+        int cardsNeeded = HandSize * 2; // Player + AI hands
+        if (deck.Cards.Count < cardsNeeded)
+        {
+            throw new InvalidOperationException($"Not enough cards in deck. Need {cardsNeeded}, have {deck.Cards.Count}");
+        }
+        
         for (int i = 0; i < HandSize; i++)
         {
             Card playerCard = deck.DrawCard();
