@@ -67,18 +67,26 @@ public class Hands
 
     private void DrawHand(SpriteBatch spriteBatch, string title, List<Card> hand, Vector2 position, float Fade)
     {
-        // Draw the title of the hand
-        //spriteBatch.DrawString(GameAssets.Font, title, position, Color.White);
+        if (hand == null || hand.Count == 0)
+            return;
 
-        // Draw each card in the hand
+        // Draw the title/label of the hand (similar to PlayedCards.cs)
+        if (Fonts.MainFont != null && !string.IsNullOrEmpty(title))
+        {
+            spriteBatch.DrawString(Fonts.MainFont, title, position, Color.White * Fade, 0f, Vector2.Zero, 1.5f, SpriteEffects.None, Global.HandsLayerDepth);
+        }
+
+        // Draw each card in the hand (offset down from label, similar to PlayedCards.cs)
+        Vector2 cardPosition = new Vector2(position.X, position.Y + 40);
         foreach (var card in hand)
         {
             Texture2D cardTexture = Textures.GetCardTexture(card);
-            spriteBatch.Draw(cardTexture, position, null, Color.White * Fade, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, Global.HandsLayerDepth);
-            position.X += (cardTexture.Width / 2) + 10; // Move right for the next card
+            if (cardTexture != null)
+            {
+                spriteBatch.Draw(cardTexture, cardPosition, null, Color.White * Fade, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, Global.HandsLayerDepth);
+                cardPosition.X += (cardTexture.Width * 0.5f) + 10; // Move right for the next card
+            }
         }
-
-        position.X = 50; // Reset X position for the next hand
     }
 
     public void Draw(SpriteBatch spriteBatch, float Fade)
