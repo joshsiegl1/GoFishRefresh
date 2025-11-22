@@ -33,11 +33,21 @@ namespace GoFishRefresh.Core.UI
 
         private void onShowPlayedCardsClick(object sender, EventArgs e)
         {
+            // If clicking to show played cards, hide hands screen
+            if (!showPlayedHands)
+            {
+                showHands = false; // Hide hands screen
+            }
             showPlayedHands = !showPlayedHands;
         }
 
         private void onShowHandsClick(object sender, EventArgs e)
         {
+            // If clicking to show hands, hide played cards screen
+            if (!showHands)
+            {
+                showPlayedHands = false; // Hide played cards screen
+            }
             showHands = !showHands;
         }
 
