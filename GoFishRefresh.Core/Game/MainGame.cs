@@ -282,10 +282,26 @@ public class MainGame
                 animatingCards.RemoveAt(i);
         }
 
-        foreach (PlayerCard pCard in playerHand)
+        // Determine the top-most player card under the cursor (iterate from top draw order)
+        Matrix invMatrix = Matrix.Invert(Global.createTransformMatrix(graphics));
+        Vector2 mouseWorld = Vector2.Transform(new Vector2(MS.X, MS.Y), invMatrix);
+        int topIndex = -1;
+        for (int i = playerHand.Count - 1; i >= 0; i--)
         {
-            pCard.UpdateSelection(MS, graphics);
+            if (playerHand[i].ContainsPoint(mouseWorld))
+            {
+                topIndex = i;
+                break;
+            }
         }
+
+        // Update selection: only the top-most card (if any) should accept click toggles
+        for (int i = 0; i < playerHand.Count; i++)
+        {
+            bool allowClick = (i == topIndex);
+            playerHand[i].UpdateSelection(MS, graphics, allowClick);
+        }
+
         // Animate darkening of non-selected cards when any card is selected
         bool hasSelection = playerHand.Any(p => p.IsSelected);
         foreach (PlayerCard pCard in playerHand)
