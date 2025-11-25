@@ -34,6 +34,14 @@ public class PlayerCard : ISelectable
     private float dealDuration = 0.5f;
     private float dealDelay = 0f;
     public bool IsDealing { get; private set; } = false;
+    // Selection rise animation
+    private float selectedOffset = 0f; // current vertical offset when selected
+    private float selectedTargetOffset = 0f; // target offset to animate to
+    private const float SelectedRiseAmount = 20f; // pixels to rise when selected
+    // Darken / tint animation for non-selected cards
+    private float tintAlpha = 0f; // current darkness (0 = normal, 1 = fully black)
+    private float targetTintAlpha = 0f; // animated target
+    private const float MaxTint = 0.5f; // how dark non-selected cards become
 
     public void StartDeal(Vector2 start, Vector2 target, float duration, float delay = 0f)
     {
@@ -48,10 +56,18 @@ public class PlayerCard : ISelectable
 
     public void Update(GameTime gameTime)
     {
+        float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        // Smoothly animate selection offset towards the target
+        float lerpFactor = MathHelper.Clamp(12f * dt, 0f, 1f);
+        selectedOffset = MathHelper.Lerp(selectedOffset, selectedTargetOffset, lerpFactor);
+        // Smoothly animate tint alpha towards the target
+        tintAlpha = MathHelper.Lerp(tintAlpha, targetTintAlpha, lerpFactor);
+
+        // If dealing, also update the dealing animation
         if (!IsDealing)
             return;
 
-        dealElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
+        dealElapsed += dt;
         if (dealElapsed < dealDelay)
             return;
 
@@ -68,11 +84,11 @@ public class PlayerCard : ISelectable
     }
     public void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw(texture, position, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, layerDepth);
-        if (IsSelected)
-        {
-            spriteBatch.Draw(Textures.CardSelected, position, null, Color.White, 0f, Vector2.Zero, Scale, SpriteEffects.None, layerDepth + 0.01f);
-        }
+        // Render with current animated vertical offset when selected
+        Vector2 drawPos = new Vector2(position.X, position.Y - selectedOffset);
+        // Apply darkening for non-selected cards by multiplying color alpha
+        float tint = MathHelper.Clamp(tintAlpha, 0f, MaxTint);
+        spriteBatch.Draw(texture, drawPos, null, Color.White * (1f - tint), 0f, Vector2.Zero, Scale, SpriteEffects.None, layerDepth);
     }
     public void LoadContent(ContentManager Content)
     {
@@ -88,15 +104,17 @@ public class PlayerCard : ISelectable
     public void Select()
     {
         IsSelected = true;
-        // Bring selected card to the top of the display stack
+        // Bring selected card to the top of the display stack and animate rise
         layerDepth = Global.DisplayCardLayerDepth + 0.05f;
+        selectedTargetOffset = SelectedRiseAmount;
         onSelect?.Invoke(this, EventArgs.Empty);
     }
     public void Deselect()
     {
         IsSelected = false;
-        // Reset layer depth when deselected
+        // Reset layer depth when deselected and animate decline
         layerDepth = Global.DisplayCardLayerDepth;
+        selectedTargetOffset = 0f;
         onDeselect?.Invoke(this, EventArgs.Empty);
     }
     private MouseState previousMS;
@@ -104,8 +122,17 @@ public class PlayerCard : ISelectable
     public bool ContainsPoint(Vector2 worldPoint)
     {
         if (texture == null) return false;
-        var rect = new Rectangle((int)position.X, (int)position.Y, (int)(texture.Width * Scale), (int)(texture.Height * Scale));
+        // Account for the current animated selected offset in hit-testing so visuals match interactivity.
+        var rectPos = new Vector2(position.X, position.Y - selectedOffset);
+        var rect = new Rectangle((int)rectPos.X, (int)rectPos.Y, (int)(texture.Width * Scale), (int)(texture.Height * Scale));
         return rect.Contains(worldPoint);
+    }
+
+    // Public setter for target tint (0..MaxTint)
+    public float TargetTint
+    {
+        get => targetTintAlpha;
+        set => targetTintAlpha = MathHelper.Clamp(value, 0f, MaxTint);
     }
 
     public void UpdateSelection(MouseState MS, GraphicsDeviceManager graphics, bool allowClick)

@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Linq;
 #endregion
 public class MainGame
 {
@@ -284,6 +285,12 @@ public class MainGame
         foreach (PlayerCard pCard in playerHand)
         {
             pCard.UpdateSelection(MS, graphics);
+        }
+        // Animate darkening of non-selected cards when any card is selected
+        bool hasSelection = playerHand.Any(p => p.IsSelected);
+        foreach (PlayerCard pCard in playerHand)
+        {
+            pCard.TargetTint = (hasSelection && !pCard.IsSelected) ? 0.5f : 0f;
         }
     }
     public void LoadContent(ContentManager Content)
