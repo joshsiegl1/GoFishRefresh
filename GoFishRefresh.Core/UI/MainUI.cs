@@ -10,6 +10,7 @@ namespace GoFishRefresh.Core.UI
     public class MainUI
     {
         MouseState MS; 
+            MouseState previousMS;
         Button btnShowHands;
         bool showHands = false;
         Hands hands;
@@ -54,9 +55,33 @@ namespace GoFishRefresh.Core.UI
         public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
         {
             MS = Mouse.GetState();
-            btnShowHands.UpdateSelection(MS, graphics);
-            btnShowPlayedCards.UpdateSelection(MS, graphics);
-            
+
+            // Compute whether the user clicked the overlay areas so we can dismiss them.
+            // Use the inverse transform matrix to convert mouse screen coords to virtual world coords.
+            Matrix invMatrix = Matrix.Invert(Global.createTransformMatrix(graphics));
+            Vector2 mouseWorld = Vector2.Transform(new Vector2(MS.X, MS.Y), invMatrix);
+
+            bool overlayHandled = false;
+            // If the played-cards overlay is visible and the user clicked, hide it.
+            if (PlayedCardsFade > 0f && MS.LeftButton == ButtonState.Pressed && previousMS.LeftButton == ButtonState.Released)
+            {
+                showPlayedHands = false;
+                overlayHandled = true;
+            }
+            // If the hands overlay is visible and the user clicked, hide it.
+            if (!overlayHandled && Fade > 0f && MS.LeftButton == ButtonState.Pressed && previousMS.LeftButton == ButtonState.Released)
+            {
+                showHands = false;
+                overlayHandled = true;
+            }
+
+            // Only allow the top-level buttons to receive clicks when an overlay didn't just absorb the click.
+            if (!overlayHandled)
+            {
+                btnShowHands.UpdateSelection(MS, graphics);
+                btnShowPlayedCards.UpdateSelection(MS, graphics);
+            }
+
             // Update fade for hands screen
             if (showHands && Fade < 1f)
             {
@@ -66,7 +91,7 @@ namespace GoFishRefresh.Core.UI
             {
                 Fade -= FadeSpeed;
             }
-            
+
             // Update fade for played cards screen
             if (showPlayedHands && PlayedCardsFade < 1f)
             {
@@ -76,6 +101,8 @@ namespace GoFishRefresh.Core.UI
             {
                 PlayedCardsFade -= FadeSpeed;
             }
+
+            previousMS = MS;
         }
         
         public void LoadContent(ContentManager Content)
