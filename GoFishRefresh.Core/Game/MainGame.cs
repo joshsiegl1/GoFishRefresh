@@ -8,11 +8,16 @@ using System;
 #endregion
 public class MainGame
 {
+    // Dealing animation settings
+    private Vector2 deckPosition = new Vector2(960, 540); // virtual center deck location
+    private float dealDuration = 0.35f;
+    private float dealDelayBetween = 0.08f; // seconds between each dealt card
     private Deck deck;
     private List<PlayerCard> playerHand;
     private List<AiCard> aiHand;
     private List<Card> selectedCards;
     private List<Card> playedCards; 
+    private List<AnimatedCard> animatingCards = new List<AnimatedCard>();
     private const int HandSize = 7;
     private const int HandSpacing = 180;
     private const int PlayerHandY = 700;
@@ -100,9 +105,45 @@ public class MainGame
 
     private void ReGroupCards()
     {
+        // Compute spacing compression so the player's hand fits within the virtual width,
+        // and center the hand when it is narrower than the available area.
+        const float virtualWidth = 1920f;
+        const float leftMargin = HandStartX; // starting X used elsewhere
+        const float rightMargin = 50f;
+        const float baseCardWidth = 240f; // approximate texture width in pixels
+        float cardWidth = baseCardWidth * Global.CardScale;
+
+        float availableWidth = virtualWidth - leftMargin - rightMargin;
+
+        float spacingUsed = HandSpacing;
+        float totalWidth = cardWidth;
+        if (playerHand.Count > 1)
+        {
+            totalWidth = cardWidth + (playerHand.Count - 1) * spacingUsed;
+        }
+
+        if (playerHand.Count > 1 && totalWidth > availableWidth)
+        {
+            // Compress spacing to fit
+            spacingUsed = (availableWidth - cardWidth) / Math.Max(1, playerHand.Count - 1);
+            // Clamp spacing so cards don't overlap too much
+            float minSpacing = Math.Max(20f, cardWidth * 0.25f);
+            spacingUsed = Math.Max(minSpacing, spacingUsed);
+            totalWidth = cardWidth + (playerHand.Count - 1) * spacingUsed;
+            // Start at leftMargin when compressed
+        }
+
+        // Left-align the hand (start at the left margin)
+        float startX = leftMargin;
+
         for (int i = 0; i < playerHand.Count; i++)
         {
-            playerHand[i].Position = new Vector2(HandStartX + i * HandSpacing, PlayerHandY);
+            float x = startX + i * spacingUsed;
+            playerHand[i].Position = new Vector2(x, PlayerHandY);
+            playerHand[i].Scale = Global.CardScale; // keep default scale; spacing handles fit
+            // Ensure left-most cards are drawn under the cards to their right by assigning
+            // a small incremental layer depth per index (higher index draws later/on-top).
+            playerHand[i].LayerDepth = Global.DisplayCardLayerDepth + i * 0.0001f;
         }
         for (int i = 0; i < aiHand.Count; i++)
         {
@@ -123,15 +164,27 @@ public class MainGame
         
         if (aiCardIndex >= 0)
         {
-            Card newCard = aiHand[aiCardIndex].Card;
+            // Animate the AI card moving to the player's hand, then add it to the player's hand when done.
+            AiCard ai = aiHand[aiCardIndex];
+            Vector2 aiPos = ai.Position;
+            // Remove AI card from AI hand immediately so it's no longer treated as an AI-held card
             aiHand.RemoveAt(aiCardIndex);
-            ReGroupCards(); 
-            
-            PlayerCard playerCard = new PlayerCard(newCard, 
-                new Vector2(HandStartX + playerHand.Count * HandSpacing, PlayerHandY));
-            AttachCardEventHandlers(playerCard);
-            playerCard.LoadContent(Content); 
-            playerHand.Add(playerCard);
+            ReGroupCards();
+
+            Vector2 playerTarget = new Vector2(HandStartX + playerHand.Count * HandSpacing, PlayerHandY);
+            AnimatedCard anim = new AnimatedCard(ai.Card, aiPos, playerTarget, 0.45f, 0f);
+            anim.LoadContent(Content);
+            anim.onAnimationComplete += (s, e) =>
+            {
+                // When animation completes, create a PlayerCard at the final position
+                PlayerCard playerCard = new PlayerCard(ai.Card, playerTarget);
+                AttachCardEventHandlers(playerCard);
+                playerCard.LoadContent(Content);
+                playerHand.Add(playerCard);
+                // Recalculate grouping so the new card has correct position and layer
+                ReGroupCards();
+            };
+            animatingCards.Add(anim);
         }
     }
     // I'm using composition here rather than inheritance for PlayerCard and AiCard
@@ -158,19 +211,29 @@ public class MainGame
             throw new InvalidOperationException($"Not enough cards in deck. Need {cardsNeeded}, have {deck.Cards.Count}");
         }
         
+        // Create cards and start them at the deck position, with staggered delays
         for (int i = 0; i < HandSize; i++)
         {
+            // Player card (dealt on even steps)
             Card playerCard = deck.DrawCard();
-            PlayerCard pCard = new PlayerCard(playerCard, 
-                new Vector2(HandStartX + i * HandSpacing, PlayerHandY));
+            Vector2 playerTarget = new Vector2(HandStartX + i * HandSpacing, PlayerHandY);
+            PlayerCard pCard = new PlayerCard(playerCard, deckPosition);
             AttachCardEventHandlers(pCard);
+            // delay so dealing alternates: player at step (i*2)
+            float playerDelay = (i * 2) * dealDelayBetween;
+            pCard.StartDeal(deckPosition, playerTarget, dealDuration, playerDelay);
             playerHand.Add(pCard);
-            
+
+            // AI card (dealt on odd steps)
             Card aiCard = deck.DrawCard();
-            AiCard aCard = new AiCard(aiCard, 
-                new Vector2(HandStartX + i * HandSpacing, AiHandY));
+            Vector2 aiTarget = new Vector2(HandStartX + i * HandSpacing, AiHandY);
+            AiCard aCard = new AiCard(aiCard, deckPosition);
+            float aiDelay = (i * 2 + 1) * dealDelayBetween;
+            aCard.StartDeal(deckPosition, aiTarget, dealDuration, aiDelay);
             aiHand.Add(aCard);
         }
+        // Ensure initial grouping/layers are correct after dealing
+        ReGroupCards();
     }
 
     // Refactored: Extract duplicate event handler code into reusable method
@@ -199,9 +262,28 @@ public class MainGame
         MS = Mouse.GetState(); // Fixed: Update mouse state
         cardSelector.Update(gameTime, graphics);
         playCardButton.UpdateSelection(MS, graphics);
+
+        // Update any dealing animations first (so positions are current for selection)
         foreach (PlayerCard pCard in playerHand)
         {
-            pCard.UpdateSelection(MS, graphics); 
+            pCard.Update(gameTime);
+        }
+        foreach (AiCard aCard in aiHand)
+        {
+            aCard.Update(gameTime);
+        }
+        // Update animated transfers (AI -> player)
+        for (int i = animatingCards.Count - 1; i >= 0; i--)
+        {
+            var a = animatingCards[i];
+            a.Update(gameTime);
+            if (a.IsFinished)
+                animatingCards.RemoveAt(i);
+        }
+
+        foreach (PlayerCard pCard in playerHand)
+        {
+            pCard.UpdateSelection(MS, graphics);
         }
     }
     public void LoadContent(ContentManager Content)
@@ -226,6 +308,11 @@ public class MainGame
         foreach (var aCard in aiHand)
         {
             aCard.Draw(spriteBatch);
+        }
+        // Draw any animated transfer cards on top
+        foreach (var anim in animatingCards)
+        {
+            anim.Draw(spriteBatch);
         }
     }
 }
