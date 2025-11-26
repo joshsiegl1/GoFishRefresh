@@ -91,26 +91,31 @@ public class Hands
 
     public void Draw(SpriteBatch spriteBatch, float Fade)
     {
-        Vector2 position = new Vector2(50, 200);
+        // Layout categories into columns with up to N rows per column so extra categories flow to the right.
+        Vector2 start = new Vector2(50, 50);
+        const int maxRows = 4;
+        const float verticalSpacing = 200f;
+        const float columnSpacing = 520f; // distance between columns
 
-        DrawHand(spriteBatch, "Two of a Kind", TwoOfAKind, position, Fade);
-        position.Y += 200;
-        DrawHand(spriteBatch, "Three of a Kind", ThreeOfAKind, position, Fade);
-        position.Y += 200;
-        DrawHand(spriteBatch, "Two Pair", TwoPair, position, Fade);
-        position.Y += 200;
-        DrawHand(spriteBatch, "Four of a Kind", FourOfAKind, position, Fade);
+        var categories = new List<(string title, List<Card> hand)>
+        {
+            ("Two of a Kind", TwoOfAKind),
+            ("Three of a Kind", ThreeOfAKind),
+            ("Two Pair", TwoPair),
+            ("Four of a Kind", FourOfAKind),
+            ("Full House", FullHouse),
+            ("Straight", Straight),
+            ("Flush", Flush),
+            ("Straight Flush", StraightFlush),
+            ("Royal Flush", RoyalFlush),
+        };
 
-        position = new Vector2(1110, 50);
-
-        DrawHand(spriteBatch, "Full House", FullHouse, position, Fade);
-        position.Y += 200;
-        DrawHand(spriteBatch, "Straight", Straight, position, Fade);
-        position.Y += 200;
-        DrawHand(spriteBatch, "Flush", Flush, position, Fade);
-        position.Y += 200;
-        DrawHand(spriteBatch, "Straight Flush", StraightFlush, position, Fade);
-        position.Y += 200;
-        DrawHand(spriteBatch, "Royal Flush", RoyalFlush, position, Fade);
+        for (int i = 0; i < categories.Count; i++)
+        {
+            int col = i / maxRows;
+            int row = i % maxRows;
+            Vector2 pos = new Vector2(start.X + col * columnSpacing, start.Y + row * verticalSpacing);
+            DrawHand(spriteBatch, categories[i].title, categories[i].hand, pos, Fade);
+        }
     }
 }
