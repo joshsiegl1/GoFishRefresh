@@ -20,6 +20,9 @@ namespace GoFishRefresh.Core
         // Resources for drawing.
         MainGame mainGame; 
         MainUI mainUI;
+            MainMenu mainMenu;
+            enum ScreenState { Menu, Playing }
+            ScreenState currentScreen = ScreenState.Menu;
         private GraphicsDeviceManager graphicsDeviceManager;
         /// <summary>
         /// Indicates if the game is running on a mobile platform.
@@ -40,6 +43,19 @@ namespace GoFishRefresh.Core
             graphicsDeviceManager = new GraphicsDeviceManager(this);
             mainGame = new MainGame(Content);
             mainUI = new MainUI();
+            mainMenu = new MainMenu();
+            mainMenu.OnSelected += (s, e) =>
+            {
+                if (e.Selected == "Play")
+                {
+                    currentScreen = ScreenState.Playing;
+                }
+                else if (e.Selected == "Test")
+                {
+                    // For now, Test will toggle played cards view as a placeholder
+                    mainUI.GetPlayedCards();
+                }
+            };
             // Share GraphicsDeviceManager as a service.
             Services.AddService(typeof(GraphicsDeviceManager), graphicsDeviceManager);
             Content.RootDirectory = "Content";
@@ -87,6 +103,7 @@ namespace GoFishRefresh.Core
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Textures.LoadContent(Content);
             Fonts.LoadFonts(Content); 
+            mainMenu.LoadContent(Content);
             mainGame.LoadContent(Content); 
             mainUI.LoadContent(Content);
             
@@ -113,8 +130,15 @@ namespace GoFishRefresh.Core
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
                 || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            mainGame.Update(gameTime, graphicsDeviceManager);
-            mainUI.Update(gameTime, graphicsDeviceManager);
+            if (currentScreen == ScreenState.Playing)
+            {
+                mainGame.Update(gameTime, graphicsDeviceManager);
+                mainUI.Update(gameTime, graphicsDeviceManager);
+            }
+            else if (currentScreen == ScreenState.Menu)
+            {
+                mainMenu.Update(gameTime, graphicsDeviceManager);
+            }
             base.Update(gameTime);
         }
         /// <summary>
@@ -128,8 +152,15 @@ namespace GoFishRefresh.Core
             // Clears the screen with the MonoGame orange color before drawing.
             GraphicsDevice.Clear(new Color(53, 101, 77));
             _spriteBatch.Begin(SpriteSortMode.FrontToBack, transformMatrix: Global.createTransformMatrix(graphicsDeviceManager));
-            mainGame.Draw(_spriteBatch);
-            mainUI.Draw(_spriteBatch);
+            if (currentScreen == ScreenState.Playing)
+            {
+                mainGame.Draw(_spriteBatch);
+                mainUI.Draw(_spriteBatch);
+            }
+            else if (currentScreen == ScreenState.Menu)
+            {
+                mainMenu.Draw(_spriteBatch);
+            }
             _spriteBatch.End();
             base.Draw(gameTime);
         }
