@@ -92,10 +92,10 @@ public class Hands
     public void Draw(SpriteBatch spriteBatch, float Fade)
     {
         // Layout categories into columns with up to N rows per column so extra categories flow to the right.
-        Vector2 start = new Vector2(50, 50);
+        Vector2 start = new Vector2(50, 150);
         const int maxRows = 4;
-        const float verticalSpacing = 200f;
-        const float columnSpacing = 520f; // distance between columns
+        const float verticalSpacing = 220f;
+        const float columnSpacing = 700f; // distance between columns
 
         var categories = new List<(string title, List<Card> hand)>
         {
