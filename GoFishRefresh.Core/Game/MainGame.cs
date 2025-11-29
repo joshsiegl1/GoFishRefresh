@@ -412,8 +412,12 @@ public class MainGame
 
     private void UpdateGameComponents(GameTime gameTime, GraphicsDeviceManager graphics)
     {
-        cardSelector.Update(gameTime, graphics);
-        playCardButton.UpdateSelection(currentMouseState, graphics);
+        // Don't allow interactions while Go Fish message is displayed
+        if (!showGoFishMessage)
+        {
+            cardSelector.Update(gameTime, graphics);
+            playCardButton.UpdateSelection(currentMouseState, graphics);
+        }
     }
 
     private void UpdateCardAnimations(GameTime gameTime)
@@ -434,6 +438,10 @@ public class MainGame
 
     private void UpdatePlayerCardSelection(GraphicsDeviceManager graphics)
     {
+        // Don't allow card selection while Go Fish message is displayed
+        if (showGoFishMessage)
+            return;
+
         int topCardIndex = GetTopCardIndexUnderMouse(graphics);
 
         for (int i = 0; i < playerHand.Count; i++)
@@ -492,10 +500,20 @@ public class MainGame
         if (!showGoFishMessage || Fonts.MainFont == null)
             return;
 
+        // Draw semi-transparent overlay to dim the game
+        Texture2D pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+        pixel.SetData(new[] { Color.Black });
+        spriteBatch.Draw(pixel, new Rectangle(0, 0, (int)VirtualWidth, 1080), null, Color.Black * 0.5f, 0f, Vector2.Zero, SpriteEffects.None, 0.9f);
+
+        // Draw "Go Fish!" message in large text
         string message = "Go Fish!";
-        Vector2 textSize = Fonts.MainFont.MeasureString(message) * 3f;
+        Vector2 textSize = Fonts.MainFont.MeasureString(message) * 3.5f;
         Vector2 position = new Vector2((VirtualWidth - textSize.X) / 2f, 400f);
-        spriteBatch.DrawString(Fonts.MainFont, message, position, Color.Yellow, 0f, Vector2.Zero, 3f, SpriteEffects.None, Global.HandsLayerDepth + 0.1f);
+        
+        // Draw shadow for better visibility
+        spriteBatch.DrawString(Fonts.MainFont, message, position + new Vector2(4, 4), Color.Black, 0f, Vector2.Zero, 3.5f, SpriteEffects.None, 0.91f);
+        // Draw main text
+        spriteBatch.DrawString(Fonts.MainFont, message, position, Color.Yellow, 0f, Vector2.Zero, 3.5f, SpriteEffects.None, 0.92f);
     }
 
     private void DrawGameUI(SpriteBatch spriteBatch)
@@ -503,6 +521,7 @@ public class MainGame
         cardSelector.Draw(spriteBatch);
         playCardButton.Draw(spriteBatch);
         DrawScores(spriteBatch);
+        DrawDeckCount(spriteBatch);
     }
 
     private void DrawScores(SpriteBatch spriteBatch)
@@ -514,6 +533,17 @@ public class MainGame
         Vector2 textSize = Fonts.MainFont.MeasureString(scoreText) * 1.2f;
         Vector2 position = new Vector2(VirtualWidth - textSize.X - 40, 30);
         spriteBatch.DrawString(Fonts.MainFont, scoreText, position, Color.Gold, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, Global.HandsLayerDepth);
+    }
+
+    private void DrawDeckCount(SpriteBatch spriteBatch)
+    {
+        if (Fonts.MainFont == null)
+            return;
+
+        string deckText = $"Deck: {deck.Cards.Count}";
+        Vector2 textSize = Fonts.MainFont.MeasureString(deckText) * 1.2f;
+        Vector2 position = new Vector2(VirtualWidth - textSize.X - 40, 70);
+        spriteBatch.DrawString(Fonts.MainFont, deckText, position, Color.LightBlue, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, Global.HandsLayerDepth);
     }
 
     private void DrawPlayerHand(SpriteBatch spriteBatch)
