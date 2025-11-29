@@ -5,8 +5,6 @@ using System.Globalization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using static System.Net.Mime.MediaTypeNames;
-using System.Threading.Tasks.Dataflow;
 using GoFishRefresh.Core.UI;
 namespace GoFishRefresh.Core
 {

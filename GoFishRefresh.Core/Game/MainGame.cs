@@ -125,12 +125,6 @@ public class MainGame
         var cardsToRemove = new HashSet<Card>(selectedCards, CardEqualityComparer.Instance);
         playerHand.RemoveAll(pCard => cardsToRemove.Contains(pCard.Card));
 
-        Console.WriteLine($"Player played a {HandMatcher.ToString(currentHandType)} with {selectedCards.Count} cards.");
-        Console.WriteLine("Cards played:");
-        foreach (var card in selectedCards)
-        {
-            Console.WriteLine($"- {card.Rank} of {card.Suit}");
-        }
 
         // Invoke event with the played cards
         onHandPlayed?.Invoke(this, new HandPlayedEventArgs(cardsToPlay, currentHandType));
