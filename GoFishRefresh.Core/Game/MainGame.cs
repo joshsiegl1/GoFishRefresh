@@ -42,6 +42,9 @@ public class MainGame
     private HandMatcher.HandType currentHandType = HandMatcher.HandType.None;
     private int playerPoints = 0;
     private int aiPoints = 0;
+    private bool showGoFishMessage = false;
+    private float goFishMessageTimer = 0f;
+    private const float GoFishMessageDuration = 3f;
     #endregion
 
     #region Events
@@ -268,14 +271,42 @@ public class MainGame
             return;
 
         int aiCardIndex = FindAiCardIndex(card);
-        if (aiCardIndex < 0)
+        
+        if (aiCardIndex >= 0)
+        {
+            // AI has the card - transfer it to player
+            AiCard aiCard = aiHand[aiCardIndex];
+            aiHand.RemoveAt(aiCardIndex);
+            ReGroupCards();
+            AnimateCardTransfer(aiCard, Content);
+        }
+        else
+        {
+            // AI doesn't have the card - Go Fish!
+            ShowGoFishMessage();
+            DrawCardFromDeck(Content);
+        }
+    }
+
+    private void ShowGoFishMessage()
+    {
+        showGoFishMessage = true;
+        goFishMessageTimer = GoFishMessageDuration;
+    }
+
+    private void DrawCardFromDeck(ContentManager Content)
+    {
+        if (deck.Cards.Count == 0)
             return;
 
-        AiCard aiCard = aiHand[aiCardIndex];
-        aiHand.RemoveAt(aiCardIndex);
-        ReGroupCards();
-
-        AnimateCardTransfer(aiCard, Content);
+        Card drawnCard = deck.DrawCard();
+        Vector2 playerTarget = new Vector2(HandStartX + playerHand.Count * HandSpacing, PlayerHandY);
+        
+        // Animate card from deck to player hand
+        AnimatedCard animation = new AnimatedCard(drawnCard, deckPosition, playerTarget, 0.45f, 0f);
+        animation.LoadContent(Content);
+        animation.onAnimationComplete += (s, e) => OnTransferAnimationComplete(drawnCard, playerTarget, Content);
+        animatingCards.Add(animation);
     }
 
     private int FindAiCardIndex(Card card)
@@ -360,10 +391,23 @@ public class MainGame
     public void Update(GameTime gameTime, GraphicsDeviceManager graphics)
     {
         currentMouseState = Mouse.GetState();
+        UpdateGoFishMessage(gameTime);
         UpdateGameComponents(gameTime, graphics);
         UpdateCardAnimations(gameTime);
         UpdatePlayerCardSelection(graphics);
         UpdateCardVisualEffects();
+    }
+
+    private void UpdateGoFishMessage(GameTime gameTime)
+    {
+        if (showGoFishMessage)
+        {
+            goFishMessageTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (goFishMessageTimer <= 0)
+            {
+                showGoFishMessage = false;
+            }
+        }
     }
 
     private void UpdateGameComponents(GameTime gameTime, GraphicsDeviceManager graphics)
@@ -440,6 +484,18 @@ public class MainGame
         DrawPlayerHand(spriteBatch);
         DrawAiHand(spriteBatch);
         DrawAnimatedCards(spriteBatch);
+        DrawGoFishMessage(spriteBatch);
+    }
+
+    private void DrawGoFishMessage(SpriteBatch spriteBatch)
+    {
+        if (!showGoFishMessage || Fonts.MainFont == null)
+            return;
+
+        string message = "Go Fish!";
+        Vector2 textSize = Fonts.MainFont.MeasureString(message) * 3f;
+        Vector2 position = new Vector2((VirtualWidth - textSize.X) / 2f, 400f);
+        spriteBatch.DrawString(Fonts.MainFont, message, position, Color.Yellow, 0f, Vector2.Zero, 3f, SpriteEffects.None, Global.HandsLayerDepth + 0.1f);
     }
 
     private void DrawGameUI(SpriteBatch spriteBatch)
