@@ -50,10 +50,15 @@ public class MainGame
     private float aiTurnDelay = 0f;
     private const float AiTurnDelayDuration = 1.5f;
     private Random random = new Random();
+    private bool showGameEndMessage = false;
+    private float gameEndMessageTimer = 0f;
+    private const float GameEndMessageDuration = 3f;
+    private string gameEndWinner = "";
     #endregion
 
     #region Events
     public event EventHandler<HandPlayedEventArgs> onHandPlayed;
+    public event EventHandler onGameEnd;
     
     public class HandPlayedEventArgs : EventArgs
     {
@@ -291,8 +296,16 @@ public class MainGame
         else
         {
             // AI doesn't have the card - Go Fish!
-            ShowGoFishMessage();
-            DrawCardFromDeckAndSwitchTurn(Content, true);
+            if (deck.Cards.Count == 0)
+            {
+                // Deck is empty - end the game
+                EndGame();
+            }
+            else
+            {
+                ShowGoFishMessage();
+                DrawCardFromDeckAndSwitchTurn(Content, true);
+            }
         }
     }
 
@@ -300,6 +313,19 @@ public class MainGame
     {
         showGoFishMessage = true;
         goFishMessageTimer = GoFishMessageDuration;
+    }
+
+    private void EndGame()
+    {
+        showGameEndMessage = true;
+        gameEndMessageTimer = GameEndMessageDuration;
+        
+        if (playerPoints > aiPoints)
+            gameEndWinner = "Player Wins!";
+        else if (aiPoints > playerPoints)
+            gameEndWinner = "AI Wins!";
+        else
+            gameEndWinner = "It's a Tie!";
     }
 
     private void DrawCardFromDeckAndSwitchTurn(ContentManager Content, bool switchTurn)
@@ -357,9 +383,17 @@ public class MainGame
         else
         {
             // Player doesn't have it - AI goes fishing
-            ShowGoFishMessage();
-            DrawCardToAiFromDeck(Content);
-            isPlayerTurn = true;
+            if (deck.Cards.Count == 0)
+            {
+                // Deck is empty - end the game
+                EndGame();
+            }
+            else
+            {
+                ShowGoFishMessage();
+                DrawCardToAiFromDeck(Content);
+                isPlayerTurn = true;
+            }
         }
     }
 
@@ -551,7 +585,7 @@ public class MainGame
 
     private void UpdateAiTurn(GameTime gameTime, GraphicsDeviceManager graphics)
     {
-        if (!isPlayerTurn && !showGoFishMessage)
+        if (!isPlayerTurn && !showGoFishMessage && !showGameEndMessage)
         {
             aiTurnDelay -= (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (aiTurnDelay <= 0)
@@ -566,17 +600,27 @@ public class MainGame
         if (showGoFishMessage)
         {
             goFishMessageTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (goFishMessageTimer <= 0)
+            if (goFishMessageTimer <= 0f)
             {
                 showGoFishMessage = false;
+            }
+        }
+
+        if (showGameEndMessage)
+        {
+            gameEndMessageTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (gameEndMessageTimer <= 0f)
+            {
+                showGameEndMessage = false;
+                onGameEnd?.Invoke(this, EventArgs.Empty);
             }
         }
     }
 
     private void UpdateGameComponents(GameTime gameTime, GraphicsDeviceManager graphics)
     {
-        // Don't allow interactions while Go Fish message is displayed or not player's turn
-        if (!showGoFishMessage && isPlayerTurn)
+        // Don't allow interactions while Go Fish message is displayed, game has ended, or not player's turn
+        if (!showGoFishMessage && !showGameEndMessage && isPlayerTurn)
         {
             cardSelector.Update(gameTime, graphics);
             playCardButton.UpdateSelection(currentMouseState, graphics);
@@ -660,7 +704,7 @@ public class MainGame
 
     private void DrawGoFishMessage(SpriteBatch spriteBatch)
     {
-        if (!showGoFishMessage || Fonts.MainFont == null)
+        if ((!showGoFishMessage && !showGameEndMessage) || Fonts.MainFont == null)
             return;
 
         // Draw semi-transparent overlay to dim the game
@@ -668,8 +712,8 @@ public class MainGame
         pixel.SetData(new[] { Color.Black });
         spriteBatch.Draw(pixel, new Rectangle(0, 0, (int)VirtualWidth, 1080), null, Color.Black * 0.5f, 0f, Vector2.Zero, SpriteEffects.None, 0.9f);
 
-        // Draw "Go Fish!" message in large text
-        string message = "Go Fish!";
+        // Draw message in large text
+        string message = showGameEndMessage ? gameEndWinner : "Go Fish!";
         Vector2 textSize = Fonts.MainFont.MeasureString(message) * 3.5f;
         Vector2 position = new Vector2((VirtualWidth - textSize.X) / 2f, 400f);
         

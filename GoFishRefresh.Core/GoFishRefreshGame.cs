@@ -146,6 +146,11 @@ namespace GoFishRefresh.Core
                     mainUI.GetPlayedCards().AddNewHandPlayed(e.PlayedCards, e.HandType);
                 }
             };
+            mainGame.onGameEnd += (s, e) =>
+            {
+                // Return to main menu after game ends
+                currentScreen = ScreenState.Menu;
+            };
         }
         /// <summary>
         /// Updates the game's logic, called once per frame.
