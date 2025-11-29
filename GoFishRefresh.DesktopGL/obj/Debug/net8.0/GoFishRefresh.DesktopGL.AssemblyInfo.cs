@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GoFishRefresh")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+527197aa17911778745af8dd79d4eac8f2f8419d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4408e4a07696c7c7a3439ac57ad2e072d22d11d8")]
 [assembly: System.Reflection.AssemblyProductAttribute("GoFishRefresh")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GoFishRefresh")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

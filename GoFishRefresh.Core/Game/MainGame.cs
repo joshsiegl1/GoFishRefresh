@@ -381,11 +381,13 @@ public class MainGame
         //spriteBatch.DrawString(Fonts.MainFont, "Selected Hand Type: " + handMatch, new Vector2(50, 600), Color.Black, 0f, Vector2.Zero, 2f, SpriteEffects.None, Global.HandsLayerDepth);
         foreach (var pCard in playerHand)
         {
-            pCard.Draw(spriteBatch);
+            if (!pCard.IsDealing)
+                pCard.Draw(spriteBatch);
         }
         foreach (var aCard in aiHand)
         {
-            aCard.Draw(spriteBatch);
+            if (!aCard.IsDealing)
+                aCard.Draw(spriteBatch);
         }
         // Draw any animated transfer cards on top
         foreach (var anim in animatingCards)
