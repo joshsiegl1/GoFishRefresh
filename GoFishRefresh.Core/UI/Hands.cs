@@ -65,7 +65,7 @@ public class Hands
         RoyalFlush.Add(new Card(Card.Suits.Diamonds, Card.Ranks.Ace));
     }
 
-    private void DrawHand(SpriteBatch spriteBatch, string title, List<Card> hand, Vector2 position, float Fade)
+    private void DrawHand(SpriteBatch spriteBatch, string title, List<Card> hand, Vector2 position, float Fade, int pointValue)
     {
         if (hand == null || hand.Count == 0)
             return;
@@ -78,6 +78,7 @@ public class Hands
 
         // Draw each card in the hand (offset down from label, similar to PlayedCards.cs)
         Vector2 cardPosition = new Vector2(position.X, position.Y + 40);
+        float rightMostX = cardPosition.X;
         foreach (var card in hand)
         {
             Texture2D cardTexture = Textures.GetCardTexture(card);
@@ -85,7 +86,16 @@ public class Hands
             {
                 spriteBatch.Draw(cardTexture, cardPosition, null, Color.White * Fade, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, Global.HandsLayerDepth);
                 cardPosition.X += (cardTexture.Width * 0.5f) + 10; // Move right for the next card
+                rightMostX = cardPosition.X;
             }
+        }
+
+        // Draw point value to the right of cards in larger font
+        if (Fonts.MainFont != null && pointValue > 0)
+        {
+            string pointText = $"+({pointValue})";
+            Vector2 pointPosition = new Vector2(rightMostX + 20, position.Y + 80);
+            spriteBatch.DrawString(Fonts.MainFont, pointText, pointPosition, Color.Gold * Fade, 0f, Vector2.Zero, 2.0f, SpriteEffects.None, Global.HandsLayerDepth);
         }
     }
 
@@ -97,17 +107,17 @@ public class Hands
         const float verticalSpacing = 220f;
         const float columnSpacing = 700f; // distance between columns
 
-        var categories = new List<(string title, List<Card> hand)>
+        var categories = new List<(string title, List<Card> hand, int points)>
         {
-            ("Two of a Kind", TwoOfAKind),
-            ("Three of a Kind", ThreeOfAKind),
-            ("Two Pair", TwoPair),
-            ("Four of a Kind", FourOfAKind),
-            ("Full House", FullHouse),
-            ("Straight", Straight),
-            ("Flush", Flush),
-            ("Straight Flush", StraightFlush),
-            ("Royal Flush", RoyalFlush),
+            ("Two of a Kind", TwoOfAKind, 1),
+            ("Three of a Kind", ThreeOfAKind, 3),
+            ("Two Pair", TwoPair, 2),
+            ("Four of a Kind", FourOfAKind, 10),
+            ("Full House", FullHouse, 8),
+            ("Straight", Straight, 5),
+            ("Flush", Flush, 6),
+            ("Straight Flush", StraightFlush, 15),
+            ("Royal Flush", RoyalFlush, 25),
         };
 
         for (int i = 0; i < categories.Count; i++)
@@ -115,7 +125,7 @@ public class Hands
             int col = i / maxRows;
             int row = i % maxRows;
             Vector2 pos = new Vector2(start.X + col * columnSpacing, start.Y + row * verticalSpacing);
-            DrawHand(spriteBatch, categories[i].title, categories[i].hand, pos, Fade);
+            DrawHand(spriteBatch, categories[i].title, categories[i].hand, pos, Fade, categories[i].points);
         }
     }
 }

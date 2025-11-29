@@ -40,6 +40,8 @@ public class MainGame
     private readonly PlayCardButton playCardButton;
     private MouseState currentMouseState;
     private HandMatcher.HandType currentHandType = HandMatcher.HandType.None;
+    private int playerPoints = 0;
+    private int aiPoints = 0;
     #endregion
 
     #region Events
@@ -55,6 +57,23 @@ public class MainGame
             PlayedCards = new List<Card>(playedCards);
             HandType = handType;
         }
+    }
+
+    private static int GetHandPoints(HandMatcher.HandType handType)
+    {
+        return handType switch
+        {
+            HandMatcher.HandType.Pair => 1,
+            HandMatcher.HandType.TwoPair => 2,
+            HandMatcher.HandType.ThreeOfAKind => 3,
+            HandMatcher.HandType.Straight => 5,
+            HandMatcher.HandType.Flush => 6,
+            HandMatcher.HandType.FullHouse => 8,
+            HandMatcher.HandType.FourOfAKind => 10,
+            HandMatcher.HandType.StraightFlush => 15,
+            HandMatcher.HandType.RoyalFlush => 25,
+            _ => 0
+        };
     }
     #endregion
 
@@ -148,6 +167,10 @@ public class MainGame
         var cardsToPlay = new List<Card>(selectedCards);
         playedCards.AddRange(cardsToPlay);
         RemoveCardsFromPlayerHand(selectedCards);
+        
+        // Award points for the hand
+        playerPoints += GetHandPoints(currentHandType);
+        
         onHandPlayed?.Invoke(this, new HandPlayedEventArgs(cardsToPlay, currentHandType));
         ResetSelection();
     }
@@ -423,6 +446,18 @@ public class MainGame
     {
         cardSelector.Draw(spriteBatch);
         playCardButton.Draw(spriteBatch);
+        DrawScores(spriteBatch);
+    }
+
+    private void DrawScores(SpriteBatch spriteBatch)
+    {
+        if (Fonts.MainFont == null)
+            return;
+
+        string scoreText = $"Player: {playerPoints}    AI: {aiPoints}";
+        Vector2 textSize = Fonts.MainFont.MeasureString(scoreText) * 1.2f;
+        Vector2 position = new Vector2(VirtualWidth - textSize.X - 40, 30);
+        spriteBatch.DrawString(Fonts.MainFont, scoreText, position, Color.Gold, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, Global.HandsLayerDepth);
     }
 
     private void DrawPlayerHand(SpriteBatch spriteBatch)
