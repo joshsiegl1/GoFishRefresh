@@ -38,6 +38,7 @@ public class MainGame
     private readonly List<AnimatedCard> animatingCards;
     private readonly CardSelector cardSelector;
     private readonly PlayCardButton playCardButton;
+    private ContentManager content;
     private MouseState currentMouseState;
     private HandMatcher.HandType currentHandType = HandMatcher.HandType.None;
     private int playerPoints = 0;
@@ -45,6 +46,10 @@ public class MainGame
     private bool showGoFishMessage = false;
     private float goFishMessageTimer = 0f;
     private const float GoFishMessageDuration = 3f;
+    private bool isPlayerTurn = true;
+    private float aiTurnDelay = 0f;
+    private const float AiTurnDelayDuration = 1.5f;
+    private Random random = new Random();
     #endregion
 
     #region Events
@@ -83,6 +88,7 @@ public class MainGame
     #region Constructors
     public MainGame(ContentManager Content)
     {
+        content = Content;
         deck = new Deck();
         deck.Shuffle();
         playerHand = new List<PlayerCard>();
@@ -101,6 +107,7 @@ public class MainGame
     /// </summary>
     public MainGame(ContentManager Content, IReadOnlyList<Card> startingCards)
     {
+        content = Content;
         deck = new Deck();
         deck.Shuffle();
         playerHand = new List<PlayerCard>();
@@ -279,12 +286,13 @@ public class MainGame
             aiHand.RemoveAt(aiCardIndex);
             ReGroupCards();
             AnimateCardTransfer(aiCard, Content);
+            // Player gets another turn if they got the card
         }
         else
         {
             // AI doesn't have the card - Go Fish!
             ShowGoFishMessage();
-            DrawCardFromDeck(Content);
+            DrawCardFromDeckAndSwitchTurn(Content, true);
         }
     }
 
@@ -294,10 +302,17 @@ public class MainGame
         goFishMessageTimer = GoFishMessageDuration;
     }
 
-    private void DrawCardFromDeck(ContentManager Content)
+    private void DrawCardFromDeckAndSwitchTurn(ContentManager Content, bool switchTurn)
     {
         if (deck.Cards.Count == 0)
+        {
+            if (switchTurn)
+            {
+                isPlayerTurn = false;
+                aiTurnDelay = AiTurnDelayDuration;
+            }
             return;
+        }
 
         Card drawnCard = deck.DrawCard();
         Vector2 playerTarget = new Vector2(HandStartX + playerHand.Count * HandSpacing, PlayerHandY);
@@ -305,7 +320,142 @@ public class MainGame
         // Animate card from deck to player hand
         AnimatedCard animation = new AnimatedCard(drawnCard, deckPosition, playerTarget, 0.45f, 0f);
         animation.LoadContent(Content);
-        animation.onAnimationComplete += (s, e) => OnTransferAnimationComplete(drawnCard, playerTarget, Content);
+        animation.onAnimationComplete += (s, e) =>
+        {
+            OnTransferAnimationComplete(drawnCard, playerTarget, Content);
+            if (switchTurn)
+            {
+                isPlayerTurn = false;
+                aiTurnDelay = AiTurnDelayDuration;
+            }
+        };
+        animatingCards.Add(animation);
+    }
+
+    private void ExecuteAiTurn(ContentManager Content)
+    {
+        // First, check if AI can play any hands
+        CheckAndPlayAiHands();
+
+        if (aiHand.Count == 0)
+        {
+            isPlayerTurn = true;
+            return;
+        }
+
+        // AI asks for a random card rank
+        Card.Ranks requestedRank = (Card.Ranks)random.Next(1, 14); // 1-13 (Ace to King)
+        int playerCardIndex = FindPlayerCardByRank(requestedRank);
+
+        if (playerCardIndex >= 0)
+        {
+            // Player has the card - transfer to AI
+            TransferCardFromPlayerToAi(playerCardIndex, Content);
+            // AI gets another turn
+            aiTurnDelay = AiTurnDelayDuration;
+        }
+        else
+        {
+            // Player doesn't have it - AI goes fishing
+            ShowGoFishMessage();
+            DrawCardToAiFromDeck(Content);
+            isPlayerTurn = true;
+        }
+    }
+
+    private void CheckAndPlayAiHands()
+    {
+        var aiCards = aiHand.Select(ai => ai.Card).ToList();
+        var handType = HandMatcher.IsMatch(aiCards);
+
+        while (handType != HandMatcher.HandType.None)
+        {
+            // AI has a playable hand - remove cards and award points
+            aiPoints += GetHandPoints(handType);
+            
+            // Determine which cards to remove based on hand type
+            var cardsToRemove = GetCardsForHand(aiCards, handType);
+            foreach (var card in cardsToRemove)
+            {
+                int index = aiHand.FindIndex(ai => ai.Card.Rank == card.Rank && ai.Card.Suit == card.Suit);
+                if (index >= 0)
+                    aiHand.RemoveAt(index);
+            }
+
+            ReGroupCards();
+            
+            // Check if AI has another hand
+            aiCards = aiHand.Select(ai => ai.Card).ToList();
+            handType = HandMatcher.IsMatch(aiCards);
+        }
+    }
+
+    private List<Card> GetCardsForHand(List<Card> cards, HandMatcher.HandType handType)
+    {
+        // Simple implementation - return the cards that match
+        // For pairs, three of a kind, etc., find matching ranks
+        var grouped = cards.GroupBy(c => c.Rank).OrderByDescending(g => g.Count()).ToList();
+        
+        switch (handType)
+        {
+            case HandMatcher.HandType.Pair:
+                return grouped.First().Take(2).ToList();
+            case HandMatcher.HandType.ThreeOfAKind:
+                return grouped.First().Take(3).ToList();
+            case HandMatcher.HandType.FourOfAKind:
+                return grouped.First().Take(4).ToList();
+            case HandMatcher.HandType.TwoPair:
+                return grouped.Take(2).SelectMany(g => g.Take(2)).ToList();
+            case HandMatcher.HandType.FullHouse:
+                return grouped[0].Take(3).Concat(grouped[1].Take(2)).ToList();
+            default:
+                // For straights, flushes, etc., return first 5 cards that match
+                return cards.Take(5).ToList();
+        }
+    }
+
+    private int FindPlayerCardByRank(Card.Ranks rank)
+    {
+        return playerHand.FindIndex(pc => pc.Card.Rank == rank);
+    }
+
+    private void TransferCardFromPlayerToAi(int playerCardIndex, ContentManager Content)
+    {
+        PlayerCard playerCard = playerHand[playerCardIndex];
+        Vector2 startPos = playerCard.Position;
+        Card card = playerCard.Card;
+        
+        playerHand.RemoveAt(playerCardIndex);
+        ReGroupCards();
+
+        Vector2 aiTarget = new Vector2(HandStartX + aiHand.Count * HandSpacing, AiHandY);
+        AnimatedCard animation = new AnimatedCard(card, startPos, aiTarget, 0.45f, 0f);
+        animation.LoadContent(Content);
+        animation.onAnimationComplete += (s, e) =>
+        {
+            AiCard aiCard = new AiCard(card, aiTarget);
+            aiHand.Add(aiCard);
+            ReGroupCards();
+        };
+        animatingCards.Add(animation);
+    }
+
+    private void DrawCardToAiFromDeck(ContentManager Content)
+    {
+        if (deck.Cards.Count == 0)
+            return;
+
+        Card drawnCard = deck.DrawCard();
+        Vector2 aiTarget = new Vector2(HandStartX + aiHand.Count * HandSpacing, AiHandY);
+        
+        AnimatedCard animation = new AnimatedCard(drawnCard, deckPosition, aiTarget, 0.45f, 0f);
+        animation.LoadContent(Content);
+        animation.onAnimationComplete += (s, e) =>
+        {
+            AiCard aiCard = new AiCard(drawnCard, aiTarget);
+            aiHand.Add(aiCard);
+            ReGroupCards();
+        };
         animatingCards.Add(animation);
     }
 
@@ -392,10 +542,23 @@ public class MainGame
     {
         currentMouseState = Mouse.GetState();
         UpdateGoFishMessage(gameTime);
+        UpdateAiTurn(gameTime, graphics);
         UpdateGameComponents(gameTime, graphics);
         UpdateCardAnimations(gameTime);
         UpdatePlayerCardSelection(graphics);
         UpdateCardVisualEffects();
+    }
+
+    private void UpdateAiTurn(GameTime gameTime, GraphicsDeviceManager graphics)
+    {
+        if (!isPlayerTurn && !showGoFishMessage)
+        {
+            aiTurnDelay -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (aiTurnDelay <= 0)
+            {
+                ExecuteAiTurn(content);
+            }
+        }
     }
 
     private void UpdateGoFishMessage(GameTime gameTime)
@@ -412,8 +575,8 @@ public class MainGame
 
     private void UpdateGameComponents(GameTime gameTime, GraphicsDeviceManager graphics)
     {
-        // Don't allow interactions while Go Fish message is displayed
-        if (!showGoFishMessage)
+        // Don't allow interactions while Go Fish message is displayed or not player's turn
+        if (!showGoFishMessage && isPlayerTurn)
         {
             cardSelector.Update(gameTime, graphics);
             playCardButton.UpdateSelection(currentMouseState, graphics);
@@ -518,7 +681,9 @@ public class MainGame
 
     private void DrawGameUI(SpriteBatch spriteBatch)
     {
-        cardSelector.Draw(spriteBatch);
+        // Only show card selector during player's turn
+        if (isPlayerTurn)
+            cardSelector.Draw(spriteBatch);
         playCardButton.Draw(spriteBatch);
         DrawScores(spriteBatch);
         DrawDeckCount(spriteBatch);
