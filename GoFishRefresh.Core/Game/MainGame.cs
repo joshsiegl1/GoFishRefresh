@@ -50,6 +50,7 @@ public class MainGame
     private float aiTurnDelay = 0f;
     private const float AiTurnDelayDuration = 1.5f;
     private Random random = new Random();
+    private string goFishNextTurnText = "";
     private bool showGameEndMessage = false;
     private float gameEndMessageTimer = 0f;
     private const float GameEndMessageDuration = 3f;
@@ -303,16 +304,18 @@ public class MainGame
             }
             else
             {
-                ShowGoFishMessage();
+                // Next turn will be AI's
+                ShowGoFishMessage(false);
                 DrawCardFromDeckAndSwitchTurn(Content, true);
             }
         }
     }
 
-    private void ShowGoFishMessage()
+    private void ShowGoFishMessage(bool nextIsPlayerTurn)
     {
         showGoFishMessage = true;
         goFishMessageTimer = GoFishMessageDuration;
+        goFishNextTurnText = nextIsPlayerTurn ? "Next: Player's Turn" : "Next: AI's Turn";
     }
 
     private void EndGame()
@@ -390,7 +393,8 @@ public class MainGame
             }
             else
             {
-                ShowGoFishMessage();
+                // Next turn will be Player's
+                ShowGoFishMessage(true);
                 DrawCardToAiFromDeck(Content);
                 isPlayerTurn = true;
             }
@@ -400,52 +404,122 @@ public class MainGame
     private void CheckAndPlayAiHands()
     {
         var aiCards = aiHand.Select(ai => ai.Card).ToList();
-        var handType = HandMatcher.IsMatch(aiCards);
-
-        while (handType != HandMatcher.HandType.None)
+        
+        while (true)
         {
+            var (handType, cardsToPlay) = FindBestHandInCards(aiCards);
+            
+            if (handType == HandMatcher.HandType.None || cardsToPlay == null || cardsToPlay.Count == 0)
+                break;
+            
             // AI has a playable hand - remove cards and award points
             aiPoints += GetHandPoints(handType);
             
-            // Determine which cards to remove based on hand type
-            var cardsToRemove = GetCardsForHand(aiCards, handType);
-            foreach (var card in cardsToRemove)
+            // Remove the played cards from AI's hand
+            foreach (var card in cardsToPlay)
             {
-                int index = aiHand.FindIndex(ai => ai.Card.Rank == card.Rank && ai.Card.Suit == card.Suit);
+                int index = aiHand.FindIndex(ai => ai.Card != null && ai.Card.Rank == card.Rank && ai.Card.Suit == card.Suit);
                 if (index >= 0)
                     aiHand.RemoveAt(index);
             }
 
             ReGroupCards();
             
-            // Check if AI has another hand
+            // Update card list for next iteration
             aiCards = aiHand.Select(ai => ai.Card).ToList();
-            handType = HandMatcher.IsMatch(aiCards);
         }
     }
 
-    private List<Card> GetCardsForHand(List<Card> cards, HandMatcher.HandType handType)
+    private (HandMatcher.HandType, List<Card>) FindBestHandInCards(List<Card> cards)
     {
-        // Simple implementation - return the cards that match
-        // For pairs, three of a kind, etc., find matching ranks
-        var grouped = cards.GroupBy(c => c.Rank).OrderByDescending(g => g.Count()).ToList();
-        
-        switch (handType)
+        if (cards == null || cards.Count < 2)
+            return (HandMatcher.HandType.None, null);
+
+        // Check for 5-card hands first (highest priority)
+        if (cards.Count >= 5)
         {
-            case HandMatcher.HandType.Pair:
-                return grouped.First().Take(2).ToList();
-            case HandMatcher.HandType.ThreeOfAKind:
-                return grouped.First().Take(3).ToList();
-            case HandMatcher.HandType.FourOfAKind:
-                return grouped.First().Take(4).ToList();
-            case HandMatcher.HandType.TwoPair:
-                return grouped.Take(2).SelectMany(g => g.Take(2)).ToList();
-            case HandMatcher.HandType.FullHouse:
-                return grouped[0].Take(3).Concat(grouped[1].Take(2)).ToList();
-            default:
-                // For straights, flushes, etc., return first 5 cards that match
-                return cards.Take(5).ToList();
+            // Try all combinations of 5 cards
+            for (int i = 0; i < cards.Count - 4; i++)
+            {
+                for (int j = i + 1; j < cards.Count - 3; j++)
+                {
+                    for (int k = j + 1; k < cards.Count - 2; k++)
+                    {
+                        for (int l = k + 1; l < cards.Count - 1; l++)
+                        {
+                            for (int m = l + 1; m < cards.Count; m++)
+                            {
+                                var fiveCards = new List<Card> { cards[i], cards[j], cards[k], cards[l], cards[m] };
+                                var handType = HandMatcher.IsMatch(fiveCards);
+                                
+                                // Royal Flush is the best, return immediately
+                                if (handType == HandMatcher.HandType.RoyalFlush)
+                                    return (handType, fiveCards);
+                                // Straight Flush is second best
+                                if (handType == HandMatcher.HandType.StraightFlush)
+                                    return (handType, fiveCards);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check for Full House and Flush
+            for (int i = 0; i < cards.Count - 4; i++)
+            {
+                for (int j = i + 1; j < cards.Count - 3; j++)
+                {
+                    for (int k = j + 1; k < cards.Count - 2; k++)
+                    {
+                        for (int l = k + 1; l < cards.Count - 1; l++)
+                        {
+                            for (int m = l + 1; m < cards.Count; m++)
+                            {
+                                var fiveCards = new List<Card> { cards[i], cards[j], cards[k], cards[l], cards[m] };
+                                var handType = HandMatcher.IsMatch(fiveCards);
+                                
+                                if (handType == HandMatcher.HandType.FullHouse || 
+                                    handType == HandMatcher.HandType.Flush ||
+                                    handType == HandMatcher.HandType.Straight)
+                                    return (handType, fiveCards);
+                            }
+                        }
+                    }
+                }
+            }
         }
+
+        // Check for Four of a Kind
+        var rankGroups = cards.GroupBy(c => c.Rank).OrderByDescending(g => g.Count()).ToList();
+        if (rankGroups.Any(g => g.Count() >= 4))
+        {
+            var fourOfAKind = rankGroups.First(g => g.Count() >= 4).Take(4).ToList();
+            return (HandMatcher.HandType.FourOfAKind, fourOfAKind);
+        }
+
+        // Check for Three of a Kind
+        if (rankGroups.Any(g => g.Count() >= 3))
+        {
+            var threeOfAKind = rankGroups.First(g => g.Count() >= 3).Take(3).ToList();
+            return (HandMatcher.HandType.ThreeOfAKind, threeOfAKind);
+        }
+
+        // Check for Two Pair
+        if (rankGroups.Count(g => g.Count() >= 2) >= 2)
+        {
+            var pairs = rankGroups.Where(g => g.Count() >= 2).Take(2).SelectMany(g => g.Take(2)).ToList();
+            if (pairs.Count == 4)
+                return (HandMatcher.HandType.TwoPair, pairs);
+        }
+
+        // Check for Pair
+        if (rankGroups.Any(g => g.Count() >= 2))
+        {
+            var pair = rankGroups.First(g => g.Count() >= 2).Take(2).ToList();
+            return (HandMatcher.HandType.Pair, pair);
+        }
+
+        return (HandMatcher.HandType.None, null);
     }
 
     private int FindPlayerCardByRank(Card.Ranks rank)
@@ -715,12 +789,23 @@ public class MainGame
         // Draw message in large text
         string message = showGameEndMessage ? gameEndWinner : "Go Fish!";
         Vector2 textSize = Fonts.MainFont.MeasureString(message) * 3.5f;
-        Vector2 position = new Vector2((VirtualWidth - textSize.X) / 2f, 400f);
+        Vector2 position = new Vector2((VirtualWidth - textSize.X) / 2f, 380f);
         
         // Draw shadow for better visibility
         spriteBatch.DrawString(Fonts.MainFont, message, position + new Vector2(4, 4), Color.Black, 0f, Vector2.Zero, 3.5f, SpriteEffects.None, 0.91f);
         // Draw main text
         spriteBatch.DrawString(Fonts.MainFont, message, position, Color.Yellow, 0f, Vector2.Zero, 3.5f, SpriteEffects.None, 0.92f);
+
+        // Draw upcoming turn subtitle when showing Go Fish (not on game end)
+        if (!showGameEndMessage && !string.IsNullOrEmpty(goFishNextTurnText))
+        {
+            Vector2 subSize = Fonts.MainFont.MeasureString(goFishNextTurnText) * 1.6f;
+            Vector2 subPos = new Vector2((VirtualWidth - subSize.X) / 2f, position.Y + textSize.Y + 20f);
+            // Shadow
+            spriteBatch.DrawString(Fonts.MainFont, goFishNextTurnText, subPos + new Vector2(3, 3), Color.Black, 0f, Vector2.Zero, 1.6f, SpriteEffects.None, 0.91f);
+            // Text
+            spriteBatch.DrawString(Fonts.MainFont, goFishNextTurnText, subPos, Color.Yellow, 0f, Vector2.Zero, 1.6f, SpriteEffects.None, 0.92f);
+        }
     }
 
     private void DrawGameUI(SpriteBatch spriteBatch)
