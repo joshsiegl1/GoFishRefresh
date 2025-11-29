@@ -55,6 +55,10 @@ public class MainGame
     private float gameEndMessageTimer = 0f;
     private const float GameEndMessageDuration = 3f;
     private string gameEndWinner = "";
+    private float cardSelectorAlpha = 1f;
+    private const float CardSelectorFadeSpeed = 5f;
+    private float overlayAlpha = 0f;
+    private const float OverlayFadeSpeed = 5f;
     #endregion
 
     #region Events
@@ -671,6 +675,12 @@ public class MainGame
 
     private void UpdateGoFishMessage(GameTime gameTime)
     {
+        // Fade overlay alpha based on whether any overlay is active
+        bool overlayActive = showGoFishMessage || showGameEndMessage;
+        float targetOverlayAlpha = overlayActive ? 1f : 0f;
+        float dtOverlay = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        overlayAlpha = MathHelper.Lerp(overlayAlpha, targetOverlayAlpha, OverlayFadeSpeed * dtOverlay);
+
         if (showGoFishMessage)
         {
             goFishMessageTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -693,8 +703,14 @@ public class MainGame
 
     private void UpdateGameComponents(GameTime gameTime, GraphicsDeviceManager graphics)
     {
-        // Don't allow interactions while Go Fish message is displayed, game has ended, or not player's turn
-        if (!showGoFishMessage && !showGameEndMessage && isPlayerTurn)
+        // Compute target visibility and fade alpha
+        bool selectorShouldBeVisible = !showGoFishMessage && !showGameEndMessage && isPlayerTurn;
+        float targetAlpha = selectorShouldBeVisible ? 1f : 0f;
+        float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        cardSelectorAlpha = MathHelper.Lerp(cardSelectorAlpha, targetAlpha, CardSelectorFadeSpeed * dt);
+
+        // Don't allow interactions while overlay is displayed or not player's turn
+        if (selectorShouldBeVisible)
         {
             cardSelector.Update(gameTime, graphics);
             playCardButton.UpdateSelection(currentMouseState, graphics);
@@ -778,13 +794,13 @@ public class MainGame
 
     private void DrawGoFishMessage(SpriteBatch spriteBatch)
     {
-        if ((!showGoFishMessage && !showGameEndMessage) || Fonts.MainFont == null)
+        if ((overlayAlpha <= 0.01f) || Fonts.MainFont == null)
             return;
 
         // Draw semi-transparent overlay to dim the game
         Texture2D pixel = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
         pixel.SetData(new[] { Color.Black });
-        spriteBatch.Draw(pixel, new Rectangle(0, 0, (int)VirtualWidth, 1080), null, Color.Black * 0.5f, 0f, Vector2.Zero, SpriteEffects.None, 0.9f);
+        spriteBatch.Draw(pixel, new Rectangle(0, 0, (int)VirtualWidth, 1080), null, Color.Black * (0.5f * overlayAlpha), 0f, Vector2.Zero, SpriteEffects.None, 0.9f);
 
         // Draw message in large text
         string message = showGameEndMessage ? gameEndWinner : "Go Fish!";
@@ -792,9 +808,9 @@ public class MainGame
         Vector2 position = new Vector2((VirtualWidth - textSize.X) / 2f, 380f);
         
         // Draw shadow for better visibility
-        spriteBatch.DrawString(Fonts.MainFont, message, position + new Vector2(4, 4), Color.Black, 0f, Vector2.Zero, 3.5f, SpriteEffects.None, 0.91f);
+        spriteBatch.DrawString(Fonts.MainFont, message, position + new Vector2(4, 4), Color.Black * overlayAlpha, 0f, Vector2.Zero, 3.5f, SpriteEffects.None, 0.91f);
         // Draw main text
-        spriteBatch.DrawString(Fonts.MainFont, message, position, Color.Yellow, 0f, Vector2.Zero, 3.5f, SpriteEffects.None, 0.92f);
+        spriteBatch.DrawString(Fonts.MainFont, message, position, Color.Yellow * overlayAlpha, 0f, Vector2.Zero, 3.5f, SpriteEffects.None, 0.92f);
 
         // Draw upcoming turn subtitle when showing Go Fish (not on game end)
         if (!showGameEndMessage && !string.IsNullOrEmpty(goFishNextTurnText))
@@ -802,17 +818,17 @@ public class MainGame
             Vector2 subSize = Fonts.MainFont.MeasureString(goFishNextTurnText) * 1.6f;
             Vector2 subPos = new Vector2((VirtualWidth - subSize.X) / 2f, position.Y + textSize.Y + 20f);
             // Shadow
-            spriteBatch.DrawString(Fonts.MainFont, goFishNextTurnText, subPos + new Vector2(3, 3), Color.Black, 0f, Vector2.Zero, 1.6f, SpriteEffects.None, 0.91f);
+            spriteBatch.DrawString(Fonts.MainFont, goFishNextTurnText, subPos + new Vector2(3, 3), Color.Black * overlayAlpha, 0f, Vector2.Zero, 1.6f, SpriteEffects.None, 0.91f);
             // Text
-            spriteBatch.DrawString(Fonts.MainFont, goFishNextTurnText, subPos, Color.Yellow, 0f, Vector2.Zero, 1.6f, SpriteEffects.None, 0.92f);
+            spriteBatch.DrawString(Fonts.MainFont, goFishNextTurnText, subPos, Color.Yellow * overlayAlpha, 0f, Vector2.Zero, 1.6f, SpriteEffects.None, 0.92f);
         }
     }
 
     private void DrawGameUI(SpriteBatch spriteBatch)
     {
-        // Only show card selector during player's turn
-        if (isPlayerTurn)
-            cardSelector.Draw(spriteBatch);
+        // Draw card selector with fade when appropriate
+        if (cardSelectorAlpha > 0.01f && isPlayerTurn && !showGoFishMessage && !showGameEndMessage)
+            cardSelector.Draw(spriteBatch, cardSelectorAlpha);
         playCardButton.Draw(spriteBatch);
         DrawScores(spriteBatch);
         DrawDeckCount(spriteBatch);

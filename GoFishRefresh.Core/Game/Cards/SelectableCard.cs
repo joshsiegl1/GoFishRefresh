@@ -35,6 +35,12 @@ public class SelectableCard : ISelectable
     {
         spriteBatch.Draw(texture, deckPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.CardSelectorLayerDepth);
     }
+
+    public void Draw(SpriteBatch spriteBatch, float alpha)
+    {
+        var color = Color.White * MathHelper.Clamp(alpha, 0f, 1f);
+        spriteBatch.Draw(texture, deckPosition, null, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.CardSelectorLayerDepth);
+    }
     public void Select()
     {
         IsSelected = true;

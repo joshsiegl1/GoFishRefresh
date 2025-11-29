@@ -69,4 +69,9 @@ public class CardSelector
     {
         selectableCards[drawIndex].Draw(spriteBatch);
     }
+
+    public void Draw(SpriteBatch spriteBatch, float alpha)
+    {
+        selectableCards[drawIndex].Draw(spriteBatch, alpha);
+    }
 }
