@@ -20,7 +20,7 @@ namespace GoFishRefresh.Core
         MainUI mainUI;
             MainMenu mainMenu;
             CardSelectionPrompt selectionPrompt;
-            enum ScreenState { Menu, Selecting, Playing }
+            enum ScreenState { Menu, Selecting, Playing, Quitting }
             ScreenState currentScreen = ScreenState.Menu;
         private GraphicsDeviceManager graphicsDeviceManager;
         /// <summary>
@@ -71,6 +71,10 @@ namespace GoFishRefresh.Core
                         selectionPrompt = null;
                         currentScreen = ScreenState.Menu;
                     };
+                }
+                else if (e.Selected == "Quit")
+                {
+                    currentScreen = ScreenState.Quitting;
                 }
             };
             // Share GraphicsDeviceManager as a service.
@@ -188,6 +192,10 @@ namespace GoFishRefresh.Core
                     };
                 }
                 selectionPrompt.Update(gameTime, graphicsDeviceManager);
+            }
+            else if (currentScreen == ScreenState.Quitting)
+            {
+                Exit();
             }
             base.Update(gameTime);
         }

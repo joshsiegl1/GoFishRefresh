@@ -9,7 +9,7 @@ namespace GoFishRefresh.Core.UI
 {
     public class MainMenu
     {
-        private readonly List<string> entries = new() { "Play", "Test" };
+        private readonly List<string> entries = new() { "Play", "Test", "Quit" };
         private int selectedIndex = 0;
         private int hoverIndex = -1;
 
