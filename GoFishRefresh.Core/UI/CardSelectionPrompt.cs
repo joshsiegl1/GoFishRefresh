@@ -26,6 +26,8 @@ namespace GoFishRefresh.Core.UI
         public bool IsDone { get; private set; } = false;
         public IReadOnlyList<Card> SelectedCards => selectedCards;
         public event EventHandler OnConfirm;
+        public event EventHandler OnBack;
+        private Rectangle backButtonBounds = new Rectangle(100, 40, 180, 60);
 
         public CardSelectionPrompt(int maxCards = 7)
         {
@@ -65,6 +67,20 @@ namespace GoFishRefresh.Core.UI
                     OnConfirm?.Invoke(this, EventArgs.Empty);
                 }
             }
+
+            // Back button (Esc key or click)
+            MouseState ms = Mouse.GetState();
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                OnBack?.Invoke(this, EventArgs.Empty);
+            }
+            // Mouse click on back button
+            Matrix inv = Matrix.Invert(Global.createTransformMatrix(graphics));
+            Vector2 mouseWorld = Vector2.Transform(new Vector2(ms.X, ms.Y), inv);
+            if (ms.LeftButton == ButtonState.Pressed && backButtonBounds.Contains(mouseWorld))
+            {
+                OnBack?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -76,6 +92,9 @@ namespace GoFishRefresh.Core.UI
                 spriteBatch.DrawString(Fonts.MainFont, prompt, new Vector2(100, 100), Color.White, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, Global.HandsLayerDepth);
                 string count = $"Selected: {selectedCards.Count}/{maxCards}";
                 spriteBatch.DrawString(Fonts.MainFont, count, new Vector2(100, 150), Color.Yellow, 0f, Vector2.Zero, 1.2f, SpriteEffects.None, Global.HandsLayerDepth);
+
+                // Draw back button
+                spriteBatch.DrawString(Fonts.MainFont, "< Back", new Vector2(backButtonBounds.X, backButtonBounds.Y), Color.LightBlue, 0f, Vector2.Zero, 1.3f, SpriteEffects.None, Global.HandsLayerDepth);
             }
             cardSelector.Draw(spriteBatch);
             // Optionally, draw selected cards somewhere

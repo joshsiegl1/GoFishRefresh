@@ -67,6 +67,12 @@ namespace GoFishRefresh.Core
                         AttachMainGameHandlers();
                         currentScreen = ScreenState.Playing;
                     };
+                    selectionPrompt.OnBack += (sender2, args2) =>
+                    {
+                        // Return to main menu
+                        selectionPrompt = null;
+                        currentScreen = ScreenState.Menu;
+                    };
                 }
             };
             // Share GraphicsDeviceManager as a service.

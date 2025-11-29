@@ -70,6 +70,16 @@ public class MainGame
         playCardButton = new PlayCardButton(new Vector2(HandStartX, PlayButtonY), "Play Selected Cards");
         playCardButton.onClick += OnPlayCardButtonClicked;
 
+        // Attach CardSelector selection to transfer logic (mirrors Deal())
+        cardSelector.onCardSelected += (s, e) =>
+        {
+            Card selected = cardSelector.SelectedCard;
+            if (selected != null)
+            {
+                CheckSelection(selected, Content);
+            }
+        };
+
         // Build player's hand from provided cards (no initial deal animation)
         if (startingCards != null && startingCards.Count > 0)
         {
@@ -79,6 +89,8 @@ public class MainGame
                 var card = startingCards[i];
                 var p = new PlayerCard(card, new Vector2(x, PlayerHandY));
                 playerHand.Add(p);
+                // Ensure selection events update hand match / play button
+                AttachCardEventHandlers(p);
                 // Remove this card from deck to avoid duplicates when creating AI hand
                 deck.Cards.RemoveAll(c => c.Rank == card.Rank && c.Suit == card.Suit);
                 x += HandSpacing;
