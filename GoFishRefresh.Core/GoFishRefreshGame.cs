@@ -21,7 +21,8 @@ namespace GoFishRefresh.Core
         MainGame mainGame; 
         MainUI mainUI;
             MainMenu mainMenu;
-            enum ScreenState { Menu, Playing }
+            CardSelectionPrompt selectionPrompt;
+            enum ScreenState { Menu, Selecting, Playing }
             ScreenState currentScreen = ScreenState.Menu;
         private GraphicsDeviceManager graphicsDeviceManager;
         /// <summary>
@@ -44,6 +45,7 @@ namespace GoFishRefresh.Core
             mainGame = new MainGame(Content);
             mainUI = new MainUI();
             mainMenu = new MainMenu();
+            selectionPrompt = null;
             mainMenu.OnSelected += (s, e) =>
             {
                 if (e.Selected == "Play")
@@ -52,8 +54,19 @@ namespace GoFishRefresh.Core
                 }
                 else if (e.Selected == "Test")
                 {
-                    // For now, Test will toggle played cards view as a placeholder
-                    mainUI.GetPlayedCards();
+                    // Enter selecting state using CardSelectionPrompt
+                    selectionPrompt = new CardSelectionPrompt(7);
+                    // Ensure prompt has content loaded (LoadContent already ran by now)
+                    selectionPrompt.LoadContent(Content);
+                    currentScreen = ScreenState.Selecting;
+                    selectionPrompt.OnConfirm += (sender2, args2) =>
+                    {
+                        // Start game with selected cards
+                        var cards = new List<Card>(selectionPrompt.SelectedCards);
+                        mainGame = new MainGame(Content, cards);
+                        AttachMainGameHandlers();
+                        currentScreen = ScreenState.Playing;
+                    };
                 }
             };
             // Share GraphicsDeviceManager as a service.
@@ -106,8 +119,22 @@ namespace GoFishRefresh.Core
             mainMenu.LoadContent(Content);
             mainGame.LoadContent(Content); 
             mainUI.LoadContent(Content);
+            if (selectionPrompt != null)
+            {
+                selectionPrompt.LoadContent(Content);
+            }
             
             // Connect MainGame's onHandPlayed event to MainUI's PlayedCards
+            AttachMainGameHandlers();
+            
+            base.LoadContent();
+        }
+
+        private void AttachMainGameHandlers()
+        {
+            if (mainGame == null) return;
+            // Detach existing handlers to prevent duplicates
+            // Note: C# events cannot be iterated; reassign by creating a new delegate subscription
             mainGame.onHandPlayed += (s, e) =>
             {
                 if (e != null && e.PlayedCards != null && e.PlayedCards.Count > 0)
@@ -115,8 +142,6 @@ namespace GoFishRefresh.Core
                     mainUI.GetPlayedCards().AddNewHandPlayed(e.PlayedCards, e.HandType);
                 }
             };
-            
-            base.LoadContent();
         }
         /// <summary>
         /// Updates the game's logic, called once per frame.
@@ -139,6 +164,22 @@ namespace GoFishRefresh.Core
             {
                 mainMenu.Update(gameTime, graphicsDeviceManager);
             }
+            else if (currentScreen == ScreenState.Selecting)
+            {
+                // Ensure prompt is ready
+                if (selectionPrompt == null)
+                {
+                    selectionPrompt = new CardSelectionPrompt(7);
+                    selectionPrompt.LoadContent(Content);
+                    selectionPrompt.OnConfirm += (sender2, args2) =>
+                    {
+                        var cards = new List<Card>(selectionPrompt.SelectedCards);
+                        mainGame = new MainGame(Content, cards);
+                        currentScreen = ScreenState.Playing;
+                    };
+                }
+                selectionPrompt.Update(gameTime, graphicsDeviceManager);
+            }
             base.Update(gameTime);
         }
         /// <summary>
@@ -160,6 +201,10 @@ namespace GoFishRefresh.Core
             else if (currentScreen == ScreenState.Menu)
             {
                 mainMenu.Draw(_spriteBatch);
+            }
+            else if (currentScreen == ScreenState.Selecting)
+            {
+                selectionPrompt?.Draw(_spriteBatch);
             }
             _spriteBatch.End();
             base.Draw(gameTime);

@@ -50,11 +50,54 @@ public class MainGame
         playerHand = new List<PlayerCard>();
         aiHand = new List<AiCard>();
         selectedCards = new List<Card>();
-        playedCards = new List<Card>(); // Fixed: Initialize playedCards
+        playedCards = new List<Card>();
         cardSelector = new CardSelector();
         playCardButton = new PlayCardButton(new Vector2(HandStartX, PlayButtonY), "Play Selected Cards");
         playCardButton.onClick += OnPlayCardButtonClicked;
         Deal(Content);
+    }
+
+    // New: allow starting with a custom player hand (e.g., Test mode)
+    public MainGame(ContentManager Content, IReadOnlyList<Card> startingCards)
+    {
+        deck = new Deck();
+        deck.Shuffle();
+        playerHand = new List<PlayerCard>();
+        aiHand = new List<AiCard>();
+        selectedCards = new List<Card>();
+        playedCards = new List<Card>();
+        cardSelector = new CardSelector();
+        playCardButton = new PlayCardButton(new Vector2(HandStartX, PlayButtonY), "Play Selected Cards");
+        playCardButton.onClick += OnPlayCardButtonClicked;
+
+        // Build player's hand from provided cards (no initial deal animation)
+        if (startingCards != null && startingCards.Count > 0)
+        {
+            float x = HandStartX;
+            for (int i = 0; i < startingCards.Count; i++)
+            {
+                var card = startingCards[i];
+                var p = new PlayerCard(card, new Vector2(x, PlayerHandY));
+                playerHand.Add(p);
+                // Remove this card from deck to avoid duplicates when creating AI hand
+                deck.Cards.RemoveAll(c => c.Rank == card.Rank && c.Suit == card.Suit);
+                x += HandSpacing;
+            }
+        }
+
+        // Ensure AI gets a full hand immediately (no animation)
+        int aiTargetCount = HandSize;
+        for (int i = 0; i < aiTargetCount && deck.Cards.Count > 0; i++)
+        {
+            var c = deck.DrawCard();
+            var ai = new AiCard(c, new Vector2(HandStartX + i * HandSpacing, AiHandY));
+            aiHand.Add(ai);
+        }
+
+        // Load content for current objects
+        LoadContent(Content);
+        // Group/space the cards properly
+        ReGroupCards();
     }
 
     private void OnPlayCardButtonClicked(object sender, EventArgs e)
