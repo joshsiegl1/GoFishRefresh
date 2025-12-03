@@ -16,7 +16,8 @@ namespace GoFishRefresh.Core.UI
         Hands hands;
         Button btnShowPlayedCards;
         bool showPlayedHands = false; 
-        PlayedCards playedCards; 
+        PlayedCards playerPlayedCards;
+        PlayedCards aiPlayedCards;
         float Fade = 0f;
         float PlayedCardsFade = 0f;
         private const float FadeSpeed = 0.05f;
@@ -25,11 +26,12 @@ namespace GoFishRefresh.Core.UI
         {
             btnShowHands = new Button(new Vector2(50, 50));
             btnShowHands.onClick += onShowHandsClick;
-            hands = new Hands();
+            playerPlayedCards = new PlayedCards();
+            aiPlayedCards = new PlayedCards();
+            hands = new Hands(playerPlayedCards, aiPlayedCards);
 
             btnShowPlayedCards = new Button(new Vector2(250, 50));
             btnShowPlayedCards.onClick += onShowPlayedCardsClick;
-            playedCards = new PlayedCards();
         }
 
         private void onShowPlayedCardsClick(object sender, EventArgs e)
@@ -82,6 +84,12 @@ namespace GoFishRefresh.Core.UI
                 btnShowPlayedCards.UpdateSelection(MS, graphics);
             }
 
+            // Update hands screen (handles its own toggle button)
+            if (showHands)
+            {
+                hands.Update(gameTime, graphics);
+            }
+
             // Update fade for hands screen
             if (showHands && Fade < 1f)
             {
@@ -109,6 +117,7 @@ namespace GoFishRefresh.Core.UI
         {
             btnShowHands.Texture = Textures.ShowHandsButton;
             btnShowPlayedCards.Texture = Textures.ButtonBackground;
+            hands.LoadContent(Content);
         }
         
         public void Draw(SpriteBatch spriteBatch)
@@ -129,16 +138,24 @@ namespace GoFishRefresh.Core.UI
             {
                 spriteBatch.Draw(Textures.background, new Rectangle(0, 0, 1920, 1080), null, Color.Black * 0.5f * PlayedCardsFade, 0f,
                     Vector2.Zero, SpriteEffects.None, Global.BackgroundLayerDepth);
-                playedCards.Draw(spriteBatch, PlayedCardsFade);
+                playerPlayedCards.Draw(spriteBatch, PlayedCardsFade);
             }
         }
         
         /// <summary>
-        /// Get the PlayedCards instance to connect to MainGame events
+        /// Get the player's PlayedCards instance to connect to MainGame events
         /// </summary>
-        public PlayedCards GetPlayedCards()
+        public PlayedCards GetPlayerPlayedCards()
         {
-            return playedCards;
+            return playerPlayedCards;
+        }
+
+        /// <summary>
+        /// Get the AI's PlayedCards instance to connect to MainGame events
+        /// </summary>
+        public PlayedCards GetAiPlayedCards()
+        {
+            return aiPlayedCards;
         }
     }    
 }

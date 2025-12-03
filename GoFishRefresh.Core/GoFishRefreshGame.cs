@@ -147,7 +147,14 @@ namespace GoFishRefresh.Core
             {
                 if (e != null && e.PlayedCards != null && e.PlayedCards.Count > 0)
                 {
-                    mainUI.GetPlayedCards().AddNewHandPlayed(e.PlayedCards, e.HandType);
+                    if (e.IsPlayerHand)
+                    {
+                        mainUI.GetPlayerPlayedCards().AddNewHandPlayed(e.PlayedCards, e.HandType);
+                    }
+                    else
+                    {
+                        mainUI.GetAiPlayedCards().AddNewHandPlayed(e.PlayedCards, e.HandType);
+                    }
                 }
             };
             mainGame.onGameEnd += (s, e) =>

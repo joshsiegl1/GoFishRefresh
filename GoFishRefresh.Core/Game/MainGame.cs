@@ -24,9 +24,11 @@ public class MainGame
     #endregion
 
     #region Animation Settings
-    private readonly Vector2 deckPosition = new Vector2(960, 540);
+    private readonly Vector2 deckPosition = new Vector2(1600, 540);
     private readonly float dealDuration = 0.35f;
     private readonly float dealDelayBetween = 0.08f;
+    private const int DeckStackVisualCount = 5;
+    private const float DeckStackOffset = 2f;
     #endregion
 
     #region Game State
@@ -69,11 +71,13 @@ public class MainGame
     {
         public List<Card> PlayedCards { get; }
         public HandMatcher.HandType HandType { get; }
+        public bool IsPlayerHand { get; }
         
-        public HandPlayedEventArgs(List<Card> playedCards, HandMatcher.HandType handType)
+        public HandPlayedEventArgs(List<Card> playedCards, HandMatcher.HandType handType, bool isPlayerHand)
         {
             PlayedCards = new List<Card>(playedCards);
             HandType = handType;
+            IsPlayerHand = isPlayerHand;
         }
     }
 
@@ -191,7 +195,7 @@ public class MainGame
         // Award points for the hand
         playerPoints += GetHandPoints(currentHandType);
         
-        onHandPlayed?.Invoke(this, new HandPlayedEventArgs(cardsToPlay, currentHandType));
+        onHandPlayed?.Invoke(this, new HandPlayedEventArgs(cardsToPlay, currentHandType, true));
         ResetSelection();
     }
 
@@ -418,6 +422,9 @@ public class MainGame
             
             // AI has a playable hand - remove cards and award points
             aiPoints += GetHandPoints(handType);
+            
+            // Trigger event for AI hand played
+            onHandPlayed?.Invoke(this, new HandPlayedEventArgs(cardsToPlay, handType, false));
             
             // Remove the played cards from AI's hand
             foreach (var card in cardsToPlay)
@@ -786,6 +793,7 @@ public class MainGame
     public void Draw(SpriteBatch spriteBatch)
     {
         DrawGameUI(spriteBatch);
+        DrawDeck(spriteBatch);
         DrawPlayerHand(spriteBatch);
         DrawAiHand(spriteBatch);
         DrawAnimatedCards(spriteBatch);
@@ -821,6 +829,21 @@ public class MainGame
             spriteBatch.DrawString(Fonts.MainFont, goFishNextTurnText, subPos + new Vector2(3, 3), Color.Black * overlayAlpha, 0f, Vector2.Zero, 1.6f, SpriteEffects.None, 0.91f);
             // Text
             spriteBatch.DrawString(Fonts.MainFont, goFishNextTurnText, subPos, Color.Yellow * overlayAlpha, 0f, Vector2.Zero, 1.6f, SpriteEffects.None, 0.92f);
+        }
+    }
+
+    private void DrawDeck(SpriteBatch spriteBatch)
+    {
+        if (deck.Cards.Count == 0 || AiCard.Texture == null)
+            return;
+
+        // Draw multiple cardbacks with slight offset to show stack effect
+        int cardsToShow = Math.Min(deck.Cards.Count, DeckStackVisualCount);
+        for (int i = 0; i < cardsToShow; i++)
+        {
+            Vector2 offset = new Vector2(i * DeckStackOffset, i * DeckStackOffset);
+            Vector2 drawPos = deckPosition + offset;
+            spriteBatch.Draw(AiCard.Texture, drawPos, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, Global.DeckLayerDepth - (i * 0.001f));
         }
     }
 
